@@ -227,9 +227,17 @@
         /* Fab */
         .fab { position: fixed; bottom: 24px; right: 24px; width: 56px; height: 56px; border-radius: 50%; background: var(--text-title); color: white; border: none; display: flex; align-items: center; justify-content: center; box-shadow: 0 8px 20px rgba(0,0,0,0.2); cursor: pointer; z-index: 100; }
         
-        /* Modal */
-        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 999; display: flex; align-items: flex-end; }
-        .modal-content { width: 100%; background: white; border-radius: 20px 20px 0 0; padding: 1.5rem; max-height: 80vh; overflow-y: auto; }
+        /* Modal & Alert */
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 999; display: flex; }
+        
+        /* Bottom Sheet Style (for Subkeywords) */
+        .bottom-sheet { align-items: flex-end; }
+        .bottom-sheet .modal-content { width: 100%; background: white; border-radius: 20px 20px 0 0; padding: 1.5rem; max-height: 80vh; overflow-y: auto; }
+        
+        /* Alert Popup Style */
+        .alert-popup { align-items: center; justify-content: center; }
+        .alert-popup .modal-content { width: 85%; max-width: 320px; background: white; border-radius: 20px; padding: 1.5rem 1.25rem; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+        
         .modal-header { display: flex; justify-content: space-between; margin-bottom: 1rem; font-weight: 800; }
         .subkeyword-item { padding: 12px 0; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; font-size: 0.95rem; }
     </style>
@@ -294,7 +302,7 @@
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.59 13.51 6.83 3.98"/><path d="m15.41 6.51-6.82 3.98"/></svg>
         </button>
 
-        <div id="subkeyword-modal" class="modal-overlay hidden">
+        <div id="subkeyword-modal" class="modal-overlay bottom-sheet hidden">
             <div class="modal-content">
                 <div class="modal-header">
                     <h3 id="modal-category-title">세부 선택</h3>
@@ -303,6 +311,16 @@
                 <div id="subkeyword-list"></div>
             </div>
         </div>
+
+        <div id="alert-modal" class="modal-overlay alert-popup hidden">
+            <div class="modal-content">
+                <p id="alert-msg" style="margin: 1rem 0 1.5rem; font-size: 1.05rem; font-weight: 600; color: var(--text-title); line-height: 1.5; word-break: keep-all;"></p>
+                <button id="alert-ok-btn" style="width: 100%; padding: 14px 0; border-radius: 12px; background-color: var(--primary); color: #fff; font-size: 1rem; font-weight: 700; border: none; cursor: pointer; transition: background 0.2s;">
+                    확인
+                </button>
+            </div>
+        </div>
+
     </div>
 
     <script>
@@ -367,6 +385,10 @@
             modalCategoryTitle: document.getElementById('modal-category-title'),
             modalCloseBtn: document.getElementById('modal-close-btn'),
             shareFab: document.getElementById('share-fab'),
+            // Custom Alert
+            alertModal: document.getElementById('alert-modal'),
+            alertMsg: document.getElementById('alert-msg'),
+            alertOkBtn: document.getElementById('alert-ok-btn'),
             // Stats
             totalBusinesses: document.getElementById('total-businesses'),
             totalCountries: document.getElementById('total-countries'),
@@ -409,6 +431,15 @@
             }
         }
         
+        // --- Custom Alert Helper ---
+        function showAlert(message) {
+            $.alertMsg.innerHTML = message;
+            $.alertModal.classList.remove('hidden');
+            $.alertOkBtn.onclick = () => {
+                $.alertModal.classList.add('hidden');
+            };
+        }
+
         function updateStats() {
             const countries = new Set(businessData.map(b => b.country));
             const cities = new Set(businessData.map(b => b.city));
@@ -709,7 +740,7 @@
 
             $.modalCloseBtn.onclick = () => $.subkeywordModal.classList.add('hidden');
             $.shareFab.onclick = () => {
-                navigator.clipboard.writeText(window.location.href).then(() => alert('주소가 복사되었습니다.'));
+                navigator.clipboard.writeText(window.location.href).then(() => showAlert('주소가 복사되었습니다.'));
             };
         }
         
@@ -724,7 +755,10 @@
                         b.distance = calculateDistance(state.userLocation.latitude, state.userLocation.longitude, b.latitude, b.longitude);
                     });
                     $.locationNotice.classList.add('hidden');
-                    alert('위치 확인 완료. 거리순 정렬이 가능합니다.');
+                    
+                    // [변경됨] 기본 alert 대신 커스텀 showAlert 사용
+                    showAlert('위치 확인 완료.<br>거리순 정렬이 가능합니다.');
+                    
                     handleFilterChange();
                 });
             };
