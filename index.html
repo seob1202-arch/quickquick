@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Global K-Biz</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        /* ==========================================
+         * 1. VARIABLES & RESET
+         * ==========================================
+         */
+        :root {
+            --primary: #5B4EFA;
+            --primary-dark: #4338CA;
+            --primary-light: #EEF2FF;
+            --text-title: #191F28;
+            --text-body: #4B5563;
+            --text-caption: #9CA3AF;
+            --bg-app: #F2F4F6;
+            --bg-white: #FFFFFF;
+            --radius-box: 16px;
+            --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.05);
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        
+        body {
+            font-family: "Pretendard", sans-serif;
+            background-color: var(--bg-app);
+            color: var(--text-body);
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        .app-container {
+            width: 100%; max-width: 600px;
+            background: var(--bg-white);
+            min-height: 100vh;
+            padding-bottom: 80px;
+            box-shadow: 0 0 40px rgba(0,0,0,0.05);
+        }
+
+        /* HEADER */
+        .app-header {
+            position: sticky; top: 0; z-index: 50;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1rem 1.25rem;
+            display: flex; justify-content: space-between; align-items: center;
+            border-bottom: 1px solid rgba(0,0,0,0.03);
+        }
+        .brand-logo { font-weight: 800; font-size: 1.2rem; color: var(--primary); display: flex; align-items: center; gap: 6px; }
+
+        /* STATS & SEARCH */
+        .search-section { padding: 1.5rem 1.25rem 0.5rem; }
+        .hero-title { font-size: 1.5rem; font-weight: 800; color: var(--text-title); margin-bottom: 1.25rem; line-height: 1.3; }
+        
+        .stats-box {
+            display: flex; justify-content: space-around; align-items: center;
+            background: #fff; border-radius: 20px;
+            padding: 1rem; margin-bottom: 1.5rem;
+            box-shadow: 0 8px 24px rgba(149, 157, 165, 0.1);
+            border: 1px solid #F2F4F6;
+        }
+        .stat-item { text-align: center; display: flex; flex-direction: column; align-items: center; }
+        .stat-num { font-size: 1.25rem; font-weight: 800; color: var(--text-title); }
+        .stat-label { font-size: 0.8rem; color: #8B95A1; font-weight: 500; margin-top: 2px; }
+        .stat-divider { width: 1px; height: 24px; background: #E5E8EB; }
+
+        .search-box { position: relative; margin-bottom: 1rem; }
+        .search-input {
+            width: 100%; height: 50px; padding: 0 1rem 0 3rem;
+            border-radius: 25px; border: 1px solid #E5E8EB;
+            background: #F9FAFB; font-size: 1rem; transition: 0.2s;
+        }
+        .search-input:focus { background: #fff; border-color: var(--primary); outline: none; box-shadow: 0 0 0 3px rgba(91, 78, 250, 0.1); }
+        .search-icon { position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: #8B95A1; pointer-events: none; }
+
+        .filter-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 1.5rem; }
+        .custom-select {
+            width: 100%; height: 42px; padding: 0 2rem 0 1rem;
+            border-radius: 10px; border: 1px solid #E5E8EB;
+            background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%236B7280'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E") no-repeat right 0.75rem center/1rem;
+            font-size: 0.875rem; font-weight: 600; color: var(--text-body); appearance: none;
+        }
+        .custom-select:disabled { background-color: #F2F4F6; color: #B0B8C1; }
+
+        /* CATEGORIES */
+        .category-section { display: flex; flex-direction: column; gap: 1rem; margin-bottom: 1.5rem; }
+        
+        .main-cat-scroll {
+            display: flex; overflow-x: auto; padding: 0 1.25rem; gap: 1.5rem;
+            scrollbar-width: none; border-bottom: 1px solid #F2F4F6;
+        }
+        .main-cat-scroll::-webkit-scrollbar { display: none; }
+        .main-cat-btn {
+            background: transparent; border: none; padding: 0.75rem 0;
+            font-size: 1rem; font-weight: 600; color: #8B95A1; cursor: pointer; white-space: nowrap; position: relative;
+        }
+        .main-cat-btn[aria-checked="true"] { color: var(--text-title); font-weight: 800; }
+        .main-cat-btn[aria-checked="true"]::after {
+            content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 2px; background: var(--text-title); border-radius: 2px;
+        }
+
+        .sub-cat-scroll { display: flex; overflow-x: auto; padding: 0 1.25rem; gap: 0.5rem; scrollbar-width: none; }
+        .sub-cat-scroll::-webkit-scrollbar { display: none; }
+        .cat-chip {
+            padding: 0.5rem 1rem; border-radius: 20px; font-size: 0.875rem; font-weight: 500;
+            background: #F2F4F6; color: var(--text-body); border: 1px solid transparent; cursor: pointer; white-space: nowrap;
+        }
+        .cat-chip[aria-checked="true"] { background: var(--primary); color: #fff; font-weight: 600; box-shadow: 0 2px 8px rgba(91, 78, 250, 0.25); }
+
+        /* RESULTS & CONTROLS */
+        .list-header { padding: 1.5rem 1.25rem 1rem; display: flex; justify-content: space-between; align-items: center; }
+        .list-count { font-weight: 700; color: var(--text-title); }
+        .view-toggles { display: flex; background: #F2F4F6; padding: 2px; border-radius: 8px; }
+        .view-btn { border: none; background: transparent; padding: 6px 10px; border-radius: 6px; cursor: pointer; color: #8B95A1; font-size: 0.8rem; font-weight: 600; }
+        .view-btn[aria-pressed="true"] { background: #fff; color: var(--text-title); box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
+
+        /* ==========================================
+         * 2. CARD & LIST DESIGN (Fixed)
+         * ==========================================
+         */
+        .biz-list { padding: 0 1.25rem; }
+        
+        .biz-card {
+            background: #fff; border-radius: 20px; margin-bottom: 1.5rem;
+            border: 1px solid #F2F4F6; box-shadow: var(--shadow-card);
+            overflow: hidden; display: flex; flex-direction: column;
+            transition: transform 0.2s;
+        }
+        
+        /* Image Area */
+        .card-img-wrap {
+            position: relative; width: 100%; height: 200px;
+            background: #E5E8EB; flex-shrink: 0;
+        }
+        .card-img { width: 100%; height: 100%; object-fit: cover; }
+        .card-rating-badge {
+            position: absolute; bottom: 12px; left: 12px;
+            background: rgba(0,0,0,0.7); backdrop-filter: blur(4px);
+            padding: 4px 10px; border-radius: 20px;
+            color: white; font-size: 0.75rem; font-weight: 700;
+            display: flex; align-items: center; gap: 4px;
+        }
+        .star-icon { color: #FFD700; font-size: 0.9em; }
+
+        /* Content Area */
+        .card-content { padding: 1.25rem; flex: 1; min-width: 0; }
+        
+        .biz-name { font-size: 1.25rem; font-weight: 800; color: var(--text-title); margin-bottom: 0.5rem; line-height: 1.3; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        
+        .tag-row { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+        .tag { font-size: 0.75rem; color: #555; background: #F3F4F6; padding: 4px 8px; border-radius: 6px; font-weight: 500; }
+        .tag.distance { background: #DCFCE7; color: #166534; font-weight: 700; }
+        
+        .biz-desc { 
+            font-size: 0.9rem; color: var(--text-body); line-height: 1.5; margin-bottom: 1rem;
+            display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+        }
+        
+        .info-row { display: flex; align-items: center; gap: 6px; font-size: 0.85rem; color: var(--text-caption); margin-top: 4px; }
+
+        /* Actions: CARD View (Large Buttons) */
+        .card-actions {
+            padding: 0 1.25rem 1.25rem;
+            display: flex; gap: 0.75rem; flex-wrap: wrap;
+        }
+        .btn-action {
+            flex: 1; min-width: 120px;
+            display: flex; align-items: center; justify-content: center; gap: 6px;
+            padding: 12px 0; border-radius: 12px;
+            font-size: 0.95rem; font-weight: 700;
+            text-decoration: none; transition: transform 0.1s;
+            border: 1px solid transparent;
+        }
+        .btn-action:active { transform: scale(0.98); }
+        .btn-action.primary { background: var(--primary); color: white; box-shadow: 0 4px 12px rgba(91, 78, 250, 0.25); }
+        .btn-action.secondary { background: var(--primary-light); color: var(--primary); border-color: #E0E7FF; }
+
+        /* Actions: LIST View (Small Icons) */
+        .list-actions { display: none; gap: 8px; margin-top: 8px; } /* Hidden by default */
+        .icon-btn-circle {
+            width: 36px; height: 36px; border-radius: 50%;
+            background: #F3F4F6; color: var(--text-title);
+            display: flex; align-items: center; justify-content: center;
+            border: 1px solid #E5E7EB; text-decoration: none; transition: all 0.2s;
+        }
+        .icon-btn-circle:active { transform: scale(0.9); }
+        .icon-btn-circle.call { color: var(--primary); background: var(--primary-light); border-color: #E0E7FF; }
+
+        /* --- VIEW TOGGLE LOGIC --- */
+        
+        /* 1. CARD VIEW (Default) */
+        .biz-list.view-card .list-actions { display: none !important; }
+        
+        /* 2. LIST VIEW */
+        .biz-list.view-list .biz-card { 
+            flex-direction: row; align-items: center; padding: 1rem; gap: 1rem; margin-bottom: 1rem;
+        }
+        .biz-list.view-list .card-img-wrap { width: 80px; height: 80px; border-radius: 12px; }
+        .biz-list.view-list .card-rating-badge { display: none; }
+        .biz-list.view-list .card-content { padding: 0; }
+        
+        /* Hide complex elements in List View */
+        .biz-list.view-list .biz-desc, 
+        .biz-list.view-list .info-row,
+        .biz-list.view-list .card-actions { display: none !important; }
+        
+        /* Show simple elements in List View */
+        .biz-list.view-list .list-actions { display: flex; }
+
+        /* Utils */
+        .hidden { display: none !important; }
+        .pagination { display: flex; justify-content: center; gap: 8px; margin-top: 2rem; }
+        .page-btn { width: 40px; height: 40px; border: 1px solid #E5E7EB; background: #fff; border-radius: 10px; font-weight: 600; cursor: pointer; }
+        .page-btn.active { background: var(--text-title); color: #fff; border-color: var(--text-title); }
+        .location-notice { background: #EEF2FF; padding: 12px 16px; border-radius: 12px; margin-bottom: 16px; font-size: 0.85rem; color: var(--primary); display: flex; justify-content: space-between; align-items: center; }
+        .btn-xs { background: var(--primary); color: white; border: none; padding: 4px 10px; border-radius: 6px; font-weight: 700; cursor: pointer; }
+
+        /* Fab */
+        .fab { position: fixed; bottom: 24px; right: 24px; width: 56px; height: 56px; border-radius: 50%; background: var(--text-title); color: white; border: none; display: flex; align-items: center; justify-content: center; box-shadow: 0 8px 20px rgba(0,0,0,0.2); cursor: pointer; z-index: 100; }
+        
+        /* Modal */
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 999; display: flex; align-items: flex-end; }
+        .modal-content { width: 100%; background: white; border-radius: 20px 20px 0 0; padding: 1.5rem; max-height: 80vh; overflow-y: auto; }
+        .modal-header { display: flex; justify-content: space-between; margin-bottom: 1rem; font-weight: 800; }
+        .subkeyword-item { padding: 12px 0; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; font-size: 0.95rem; }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <header class="app-header">
+            <div class="brand-logo">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color:var(--primary)">
+                    <circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+                </svg>
+                Global K-Biz
+            </div>
+        </header>
+
+        <section class="search-section">
+            <h1 class="hero-title">어떤 한인 업체를<br>찾으시나요?</h1>
+            
+            <div class="stats-box">
+                <div class="stat-item"><span class="stat-num" id="total-businesses">0</span><span class="stat-label">업체</span></div>
+                <div class="stat-divider"></div>
+                <div class="stat-item"><span class="stat-num" id="total-countries">0</span><span class="stat-label">국가</span></div>
+                <div class="stat-divider"></div>
+                <div class="stat-item"><span class="stat-num" id="total-cities">0</span><span class="stat-label">도시</span></div>
+            </div>
+
+            <div id="location-notice" class="location-notice hidden"></div>
+
+            <div class="search-box">
+                <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+                <input type="text" id="search-input" class="search-input" placeholder="업체명, 지역, 키워드 검색">
+            </div>
+
+            <div class="filter-grid">
+                <select id="country-select" class="custom-select"><option value="">국가 선택</option></select>
+                <select id="city-select" class="custom-select" disabled><option value="">도시 선택</option></select>
+                <select id="sort-select" class="custom-select">
+                    <option value="rating">평점순</option>
+                    <option value="reviews">리뷰순</option>
+                    <option value="distance">거리순</option>
+                </select>
+            </div>
+        </section>
+
+        <section class="category-section">
+            <div class="main-cat-scroll" id="main-category-list"></div>
+            <div class="sub-cat-scroll" id="category-list"></div>
+        </section>
+
+        <div class="list-header">
+            <span class="list-count" id="results-text">결과 0개</span>
+            <div class="view-toggles">
+                <button class="view-btn" id="card-view-btn" aria-pressed="true">카드</button>
+                <button class="view-btn" id="table-view-btn" aria-pressed="false">리스트</button>
+            </div>
+        </div>
+        
+        <div id="results-container" class="biz-list view-card"></div>
+        <div id="pagination-section"></div>
+
+        <button class="fab" id="share-fab">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.59 13.51 6.83 3.98"/><path d="m15.41 6.51-6.82 3.98"/></svg>
+        </button>
+
+        <div id="subkeyword-modal" class="modal-overlay hidden">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3 id="modal-category-title">세부 선택</h3>
+                    <button id="modal-close-btn" style="border:none;background:none;font-size:1.5rem">×</button>
+                </div>
+                <div id="subkeyword-list"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    (function() {
+        'use strict';
+        
+        const ICONS = {
+            phone: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>',
+            map: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>',
+            email: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>',
+            web: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>',
+            phoneSmall: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>',
+            mapSmall: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>'
+        };
+
+        function calculateDistance(lat1, lon1, lat2, lon2) {
+            const R = 6371;
+            const dLat = (lat2 - lat1) * Math.PI / 180;
+            const dLon = (lon2 - lon1) * Math.PI / 180;
+            const a = Math.sin(dLat / 2) ** 2 + Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLon / 2) ** 2;
+            return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        }
+        function formatDistance(distance) {
+            if (distance < 1) return `${Math.round(distance * 1000)}m`;
+            return `${distance.toFixed(1)}km`;
+        }
+        
+        let businessData = [];
+        const GAS_URL = 'https://script.google.com/macros/s/AKfycbwmE_NZgRjuanUYsLGopJ-YmHDecQYtiOhGe77MAlFXjkwYhgnGFh0m14IUvNIp-9lX/exec';
+        
+        const state = {
+            currentView: 'card',
+            filteredData: [],
+            currentPage: 1,
+            itemsPerPage: 10,
+            selectedMainCategory: '전체',
+            selectedCategories: new Set(['전체']),
+            selectedSubkeyword: '',
+            searchQuery: '',
+            selectedCountry: '',
+            selectedCity: '',
+            sortBy: 'rating',
+            userLocation: null,
+            isLoading: false
+        };
+        
+        const $ = {
+            searchInput: document.getElementById('search-input'),
+            countrySelect: document.getElementById('country-select'),
+            citySelect: document.getElementById('city-select'),
+            sortSelect: document.getElementById('sort-select'),
+            mainCategoryList: document.getElementById('main-category-list'),
+            categoryList: document.getElementById('category-list'),
+            cardViewBtn: document.getElementById('card-view-btn'),
+            tableViewBtn: document.getElementById('table-view-btn'),
+            resultsContainer: document.getElementById('results-container'),
+            resultsText: document.getElementById('results-text'),
+            paginationSection: document.getElementById('pagination-section'),
+            locationNotice: document.getElementById('location-notice'),
+            subkeywordModal: document.getElementById('subkeyword-modal'),
+            subkeywordList: document.getElementById('subkeyword-list'),
+            modalCategoryTitle: document.getElementById('modal-category-title'),
+            modalCloseBtn: document.getElementById('modal-close-btn'),
+            shareFab: document.getElementById('share-fab'),
+            // Stats
+            totalBusinesses: document.getElementById('total-businesses'),
+            totalCountries: document.getElementById('total-countries'),
+            totalCities: document.getElementById('total-cities')
+        };
+        
+        let searchTimeout = null;
+        
+        async function init() {
+            try {
+                state.isLoading = true;
+                renderResults(); 
+                
+                const res = await fetch(GAS_URL);
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                const data = await res.json();
+                
+                businessData = data.map(b => ({
+                    ...b,
+                    subkeywords: Array.isArray(b.subkeywords) ? b.subkeywords : []
+                }));
+                
+                state.filteredData = [...businessData];
+                state.isLoading = false;
+                
+                updateStats();
+                populateCountries();
+                populateMainCategories();
+                populateCategories();
+                setupEvents();
+                getUserLocation();
+                
+                renderResults();
+                renderPagination();
+                updateResultCount();
+            } catch (error) {
+                state.isLoading = false;
+                renderResults();
+                console.error(error);
+            }
+        }
+        
+        function updateStats() {
+            const countries = new Set(businessData.map(b => b.country));
+            const cities = new Set(businessData.map(b => b.city));
+            
+            animateNumber($.totalBusinesses, businessData.length);
+            animateNumber($.totalCountries, countries.size);
+            animateNumber($.totalCities, cities.size);
+        }
+        
+        function animateNumber(element, target) {
+            let current = 0;
+            const duration = 1500;
+            const steps = 30;
+            const increment = target / steps;
+            const stepTime = duration / steps;
+            const timer = setInterval(() => {
+                current += increment;
+                if (current >= target) {
+                    element.textContent = target;
+                    clearInterval(timer);
+                } else {
+                    element.textContent = Math.ceil(current);
+                }
+            }, stepTime);
+        }
+
+        function populateCountries() {
+            const countries = [...new Set(businessData.map(b => b.country))].sort();
+            $.countrySelect.innerHTML = '<option value="">전체 국가</option>';
+            countries.forEach(c => $.countrySelect.appendChild(new Option(c, c)));
+        }
+        function populateCities(country) {
+            $.citySelect.innerHTML = '<option value="">' + (country ? '전체 도시' : '국가 먼저 선택') + '</option>';
+            $.citySelect.disabled = !country;
+            if (country) {
+                const cities = [...new Set(businessData.filter(b => b.country === country).map(b => b.city))].sort();
+                cities.forEach(c => $.citySelect.appendChild(new Option(c, c)));
+            }
+        }
+        
+        function populateMainCategories() {
+            let filtered = businessData;
+            if (state.selectedCountry) filtered = filtered.filter(b => b.country === state.selectedCountry);
+            if (state.selectedCity) filtered = filtered.filter(b => b.city === state.selectedCity);
+
+            const mainCategories = new Set();
+            filtered.forEach(b => {
+                if (b.category && b.category.trim()) mainCategories.add(b.category.trim());
+            });
+
+            const sorted = ['전체', ...Array.from(mainCategories).sort()];
+            $.mainCategoryList.innerHTML = '';
+            
+            sorted.forEach(cat => {
+                const btn = document.createElement('button');
+                btn.className = 'main-cat-btn';
+                btn.textContent = cat;
+                btn.setAttribute('aria-checked', state.selectedMainCategory === cat);
+                btn.onclick = () => {
+                    state.selectedMainCategory = cat;
+                    state.selectedCategories.clear(); state.selectedCategories.add('전체');
+                    state.selectedSubkeyword = '';
+                    populateMainCategories(); populateCategories(); handleFilterChange();
+                };
+                $.mainCategoryList.appendChild(btn);
+            });
+        }
+
+        function populateCategories() {
+            let filtered = businessData;
+            if (state.selectedCountry) filtered = filtered.filter(b => b.country === state.selectedCountry);
+            if (state.selectedCity) filtered = filtered.filter(b => b.city === state.selectedCity);
+            if (state.selectedMainCategory !== '전체') filtered = filtered.filter(b => b.category === state.selectedMainCategory);
+            
+            const categories = new Set();
+            filtered.forEach(b => {
+                if (Array.isArray(b.services)) b.services.forEach(s => categories.add(s));
+            });
+            
+            const sorted = ['전체', ...Array.from(categories).sort()];
+            $.categoryList.innerHTML = '';
+            
+            sorted.forEach(cat => {
+                const btn = document.createElement('button');
+                btn.className = 'cat-chip';
+                btn.textContent = cat;
+                btn.setAttribute('aria-checked', state.selectedCategories.has(cat));
+                btn.onclick = () => handleCategoryClick(cat);
+                $.categoryList.appendChild(btn);
+            });
+        }
+
+        function handleCategoryClick(category) {
+            if (category === '전체') {
+                state.selectedCategories.clear(); state.selectedCategories.add('전체'); state.selectedSubkeyword = '';
+            } else {
+                state.selectedCategories.delete('전체');
+                if (state.selectedCategories.has(category)) {
+                    state.selectedCategories.delete(category);
+                    if (state.selectedCategories.size === 0) state.selectedCategories.add('전체');
+                } else {
+                    if(checkHasSubkeywords(category)) { showSubkeywordModal(category); return; }
+                    state.selectedCategories.add(category);
+                }
+            }
+            populateCategories(); handleFilterChange();
+        }
+
+        function checkHasSubkeywords(category) {
+            let filtered = businessData;
+            if (state.selectedMainCategory !== '전체') filtered = filtered.filter(b => b.category === state.selectedMainCategory);
+            return filtered.some(b => Array.isArray(b.services) && b.services.includes(category) && Array.isArray(b.subkeywords) && b.subkeywords.length > 0);
+        }
+
+        function showSubkeywordModal(category) {
+            $.modalCategoryTitle.textContent = `${category} 세부 선택`;
+            let filtered = businessData;
+            if (state.selectedMainCategory !== '전체') filtered = filtered.filter(b => b.category === state.selectedMainCategory);
+            
+            const counts = {};
+            filtered.forEach(b => {
+                if (Array.isArray(b.services) && b.services.includes(category) && Array.isArray(b.subkeywords)) {
+                    b.subkeywords.forEach(sk => { if(sk) counts[sk] = (counts[sk]||0) + 1; });
+                }
+            });
+
+            $.subkeywordList.innerHTML = '';
+            const allItem = document.createElement('div');
+            allItem.className = 'subkeyword-item';
+            allItem.innerHTML = `<span>전체 ${category}</span>`;
+            allItem.onclick = () => { state.selectedCategories.clear(); state.selectedCategories.add(category); state.selectedSubkeyword = ''; $.subkeywordModal.classList.add('hidden'); populateCategories(); handleFilterChange(); };
+            $.subkeywordList.appendChild(allItem);
+
+            Object.keys(counts).forEach(sk => {
+                const item = document.createElement('div');
+                item.className = 'subkeyword-item';
+                item.innerHTML = `<span>${sk}</span><span>${counts[sk]}</span>`;
+                item.onclick = () => { state.selectedCategories.clear(); state.selectedCategories.add(category); state.selectedSubkeyword = sk; $.subkeywordModal.classList.add('hidden'); populateCategories(); handleFilterChange(); };
+                $.subkeywordList.appendChild(item);
+            });
+            $.subkeywordModal.classList.remove('hidden');
+        }
+
+        function handleFilterChange() {
+            state.currentPage = 1;
+            applyFilters(); applySorting(); renderResults(); renderPagination(); updateResultCount();
+        }
+
+        function applyFilters() {
+            state.filteredData = businessData.filter(b => {
+                if (state.searchQuery) {
+                    const q = state.searchQuery.toLowerCase();
+                    if (![b.businessName, b.address, b.feature].some(f => String(f).toLowerCase().includes(q))) return false;
+                }
+                if (state.selectedCountry && b.country !== state.selectedCountry) return false;
+                if (state.selectedCity && b.city !== state.selectedCity) return false;
+                if (state.selectedMainCategory !== '전체' && b.category !== state.selectedMainCategory) return false;
+                
+                if (!state.selectedCategories.has('전체')) {
+                    if (!b.services || !b.services.some(s => state.selectedCategories.has(s))) return false;
+                    if (state.selectedSubkeyword && (!b.subkeywords || !b.subkeywords.includes(state.selectedSubkeyword))) return false;
+                }
+                return true;
+            });
+        }
+
+        function applySorting() {
+            state.filteredData.sort((a, b) => {
+                if (state.sortBy === 'rating') return b.rating - a.rating;
+                if (state.sortBy === 'reviews') return b.reviewCount - a.reviewCount;
+                if (state.sortBy === 'distance') return (a.distance || 99999) - (b.distance || 99999);
+                return 0;
+            });
+        }
+
+        function switchView(view) {
+            state.currentView = view;
+            $.cardViewBtn.setAttribute('aria-pressed', view === 'card');
+            $.tableViewBtn.setAttribute('aria-pressed', view === 'list');
+            if (view === 'card') {
+                $.resultsContainer.classList.remove('view-list');
+                $.resultsContainer.classList.add('view-card');
+            } else {
+                $.resultsContainer.classList.remove('view-card');
+                $.resultsContainer.classList.add('view-list');
+            }
+        }
+
+        function renderResults() {
+            $.resultsContainer.innerHTML = '';
+            
+            if (state.isLoading) {
+                $.resultsContainer.innerHTML = '<div style="text-align:center;padding:3rem;color:#888;">데이터 불러오는 중...</div>';
+                return;
+            }
+            if (state.filteredData.length === 0) {
+                $.resultsContainer.innerHTML = '<div style="text-align:center;padding:3rem;color:#888;">검색 결과가 없습니다.</div>';
+                return;
+            }
+
+            const start = (state.currentPage - 1) * state.itemsPerPage;
+            const end = start + state.itemsPerPage;
+            const pageData = state.filteredData.slice(start, end);
+
+            pageData.forEach(b => {
+                const div = document.createElement('div');
+                div.className = 'biz-card';
+                const imgUrl = b.image || "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' fill='%23eee'%3E%3Crect width='100' height='100'/%3E%3C/svg%3E";
+                const distTag = b.distance ? `<span class="tag distance">${formatDistance(b.distance)}</span>` : '';
+                const tags = (b.services || []).slice(0, 2).map(s => `<span class="tag">${s}</span>`).join('');
+                
+                // Secondary buttons for Card View
+                const mapBtn = b.googleMapsUrl ? `<a href="${b.googleMapsUrl}" target="_blank" class="btn-action secondary">${ICONS.map}<span class="action-text">지도</span></a>` : '';
+                const emailBtn = b.email ? `<a href="mailto:${b.email}" class="btn-action secondary">${ICONS.email}<span class="action-text">이메일</span></a>` : '';
+                const webBtn = b.website ? `<a href="https://${b.website}" target="_blank" class="btn-action secondary">${ICONS.web}<span class="action-text">웹사이트</span></a>` : '';
+                
+                // List View Icons (Corrected: No Text Buttons)
+                const listMap = b.googleMapsUrl ? `<a href="${b.googleMapsUrl}" target="_blank" class="icon-btn-circle" title="지도보기">${ICONS.mapSmall}</a>` : '';
+                
+                div.innerHTML = `
+                    <div class="card-img-wrap">
+                        <img src="${imgUrl}" class="card-img" alt="${b.businessName}" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'100\' height=\'100\' fill=\'%23eee\'%3E%3Crect width=\'100\' height=\'100\'/%3E%3C/svg%3E'">
+                        <div class="card-rating-badge"><span class="star-icon">★</span>${b.rating}</div>
+                    </div>
+                    <div class="card-content">
+                        <div class="biz-name">${b.businessName}</div>
+                        <div class="tag-row">${distTag}${tags}</div>
+                        <div class="biz-desc">${b.feature}</div>
+                        <div class="info-row" style="margin-bottom:2px">📍 ${b.address}</div>
+                        <div class="info-row">⏰ ${b.hours}</div>
+                        
+                        <div class="list-actions">
+                            <a href="tel:${b.phone}" class="icon-btn-circle call" title="전화걸기">${ICONS.phoneSmall}</a>
+                            ${listMap}
+                        </div>
+                    </div>
+                    
+                    <div class="card-actions">
+                        <a href="tel:${b.phone}" class="btn-action primary">${ICONS.phone}<span class="action-text">전화</span></a>
+                        ${mapBtn}
+                        ${webBtn}
+                    </div>
+                `;
+                $.resultsContainer.appendChild(div);
+            });
+        }
+
+        function renderPagination() {
+            const totalPages = Math.ceil(state.filteredData.length / state.itemsPerPage);
+            $.paginationSection.innerHTML = '';
+            if (totalPages <= 1) return;
+
+            const div = document.createElement('div');
+            div.className = 'pagination';
+            
+            for(let i=1; i<=totalPages; i++) {
+                if(i===1 || i===totalPages || (i >= state.currentPage-1 && i <= state.currentPage+1)) {
+                    const btn = document.createElement('button');
+                    btn.className = `page-btn ${i===state.currentPage ? 'active':''}`;
+                    btn.textContent = i;
+                    btn.onclick = () => { state.currentPage = i; renderResults(); renderPagination(); window.scrollTo(0,0); };
+                    div.appendChild(btn);
+                }
+            }
+            $.paginationSection.appendChild(div);
+        }
+
+        function updateResultCount() {
+            $.resultsText.textContent = `결과 ${state.filteredData.length}개`;
+        }
+        
+        function setupEvents() {
+            $.searchInput.addEventListener('input', (e) => {
+                clearTimeout(searchTimeout);
+                searchTimeout = setTimeout(() => {
+                    state.searchQuery = e.target.value.trim();
+                    handleFilterChange();
+                }, 300);
+            });
+            $.countrySelect.addEventListener('change', (e) => {
+                state.selectedCountry = e.target.value;
+                state.selectedCity = ''; $.citySelect.value = '';
+                populateCities(e.target.value);
+                state.selectedMainCategory = '전체';
+                populateMainCategories(); populateCategories(); handleFilterChange();
+            });
+            $.citySelect.addEventListener('change', (e) => {
+                state.selectedCity = e.target.value;
+                handleFilterChange();
+            });
+            $.sortSelect.addEventListener('change', (e) => {
+                state.sortBy = e.target.value;
+                handleFilterChange();
+            });
+            
+            $.cardViewBtn.addEventListener('click', () => switchView('card'));
+            $.tableViewBtn.addEventListener('click', () => switchView('list'));
+
+            $.modalCloseBtn.onclick = () => $.subkeywordModal.classList.add('hidden');
+            $.shareFab.onclick = () => {
+                navigator.clipboard.writeText(window.location.href).then(() => alert('주소가 복사되었습니다.'));
+            };
+        }
+        
+        function getUserLocation() {
+            if (!navigator.geolocation) return;
+            $.locationNotice.classList.remove('hidden');
+            $.locationNotice.innerHTML = `<span>내 주변 업체 찾기</span><button class="btn-xs" id="btn-loc">허용</button>`;
+            document.getElementById('btn-loc').onclick = () => {
+                navigator.geolocation.getCurrentPosition(pos => {
+                    state.userLocation = { latitude: pos.coords.latitude, longitude: pos.coords.longitude };
+                    businessData.forEach(b => {
+                        b.distance = calculateDistance(state.userLocation.latitude, state.userLocation.longitude, b.latitude, b.longitude);
+                    });
+                    $.locationNotice.classList.add('hidden');
+                    alert('위치 확인 완료. 거리순 정렬이 가능합니다.');
+                    handleFilterChange();
+                });
+            };
+        }
+
+        init();
+    })();
+    </script>
+</body>
+</html>
