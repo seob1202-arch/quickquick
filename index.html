@@ -3,368 +3,860 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Global K-Biz</title>
+    <meta name="description" content="전 세계 한인 업체 검색 - 국가, 도시, 업종별로 한인 업체를 쉽게 찾아보세요">
+    <title>Global Korean Business Directory</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Pretendard:wght@400;500;600;700&display=swap" rel="stylesheet">
     
     <style>
-        /* ==========================================
-         * 1. VARIABLES & RESET
-         * ==========================================
+        /* * APP-LIKE CSS RESET & VARIABLES 
          */
         :root {
-            --primary: #5B4EFA;
-            --primary-dark: #4338CA;
+            /* Palette */
+            --primary: #5B4EF5; /* Vibrant Indigo */
             --primary-light: #EEF2FF;
+            --secondary: #10B981; /* Success Green */
             --text-title: #191F28;
-            --text-body: #4B5563;
-            --text-caption: #9CA3AF;
-            --bg-app: #F2F4F6;
-            --bg-white: #FFFFFF;
-            --radius-box: 16px;
+            --text-body: #4E5968;
+            --text-caption: #8B95A1;
+            
+            /* Backgrounds */
+            --bg-app: #F2F4F6; /* App canvas outside */
+            --bg-surface: #FFFFFF;
+            --bg-input: #F9FAFB;
+            
+            /* UI Tokens */
+            --radius-s: 8px;
+            --radius-m: 16px;
+            --radius-l: 24px;
+            --radius-full: 9999px;
+            
             --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.05);
+            --shadow-float: 0 10px 30px rgba(91, 78, 245, 0.2);
+            --safe-area-bottom: env(safe-area-inset-bottom);
         }
-        
-        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+            font-family: 'Pretendard', 'Plus Jakarta Sans', sans-serif;
+        }
+
         body {
-            font-family: "Pretendard", sans-serif;
             background-color: var(--bg-app);
-            color: var(--text-body);
+            color: var(--text-title);
             display: flex;
             justify-content: center;
             min-height: 100vh;
         }
 
-        .app-container {
-            width: 100%; max-width: 600px;
-            background: var(--bg-white);
-            min-height: 100vh;
-            padding-bottom: 80px;
-            box-shadow: 0 0 40px rgba(0,0,0,0.05);
-        }
-
-        /* HEADER */
-        .app-header {
-            position: sticky; top: 0; z-index: 50;
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            padding: 1rem 1.25rem;
-            display: flex; justify-content: space-between; align-items: center;
-            border-bottom: 1px solid rgba(0,0,0,0.03);
-        }
-        .brand-logo { font-weight: 800; font-size: 1.2rem; color: var(--primary); display: flex; align-items: center; gap: 6px; }
-
-        /* STATS & SEARCH */
-        .search-section { padding: 1.5rem 1.25rem 0.5rem; }
-        .hero-title { font-size: 1.5rem; font-weight: 800; color: var(--text-title); margin-bottom: 1.25rem; line-height: 1.3; }
-        
-        .stats-box {
-            display: flex; justify-content: space-around; align-items: center;
-            background: #fff; border-radius: 20px;
-            padding: 1rem; margin-bottom: 1.5rem;
-            box-shadow: 0 8px 24px rgba(149, 157, 165, 0.1);
-            border: 1px solid #F2F4F6;
-        }
-        .stat-item { text-align: center; display: flex; flex-direction: column; align-items: center; }
-        .stat-num { font-size: 1.25rem; font-weight: 800; color: var(--text-title); }
-        .stat-label { font-size: 0.8rem; color: #8B95A1; font-weight: 500; margin-top: 2px; }
-        .stat-divider { width: 1px; height: 24px; background: #E5E8EB; }
-
-        .search-box { position: relative; margin-bottom: 1rem; }
-        .search-input {
-            width: 100%; height: 50px; padding: 0 1rem 0 3rem;
-            border-radius: 25px; border: 1px solid #E5E8EB;
-            background: #F9FAFB; font-size: 1rem; transition: 0.2s;
-        }
-        .search-input:focus { background: #fff; border-color: var(--primary); outline: none; box-shadow: 0 0 0 3px rgba(91, 78, 250, 0.1); }
-        .search-icon { position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: #8B95A1; pointer-events: none; }
-
-        .filter-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 1.5rem; }
-        .custom-select {
-            width: 100%; height: 42px; padding: 0 2rem 0 1rem;
-            border-radius: 10px; border: 1px solid #E5E8EB;
-            background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%236B7280'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E") no-repeat right 0.75rem center/1rem;
-            font-size: 0.875rem; font-weight: 600; color: var(--text-body); appearance: none;
-        }
-        .custom-select:disabled { background-color: #F2F4F6; color: #B0B8C1; }
-
-        /* CATEGORIES */
-        .category-section { display: flex; flex-direction: column; gap: 1rem; margin-bottom: 1.5rem; }
-        
-        .main-cat-scroll {
-            display: flex; overflow-x: auto; padding: 0 1.25rem; gap: 1.5rem;
-            scrollbar-width: none; border-bottom: 1px solid #F2F4F6;
-        }
-        .main-cat-scroll::-webkit-scrollbar { display: none; }
-        .main-cat-btn {
-            background: transparent; border: none; padding: 0.75rem 0;
-            font-size: 1rem; font-weight: 600; color: #8B95A1; cursor: pointer; white-space: nowrap; position: relative;
-        }
-        .main-cat-btn[aria-checked="true"] { color: var(--text-title); font-weight: 800; }
-        .main-cat-btn[aria-checked="true"]::after {
-            content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 2px; background: var(--text-title); border-radius: 2px;
-        }
-
-        .sub-cat-scroll { display: flex; overflow-x: auto; padding: 0 1.25rem; gap: 0.5rem; scrollbar-width: none; }
-        .sub-cat-scroll::-webkit-scrollbar { display: none; }
-        .cat-chip {
-            padding: 0.5rem 1rem; border-radius: 20px; font-size: 0.875rem; font-weight: 500;
-            background: #F2F4F6; color: var(--text-body); border: 1px solid transparent; cursor: pointer; white-space: nowrap;
-        }
-        .cat-chip[aria-checked="true"] { background: var(--primary); color: #fff; font-weight: 600; box-shadow: 0 2px 8px rgba(91, 78, 250, 0.25); }
-
-        /* RESULTS & CONTROLS */
-        .list-header { padding: 1.5rem 1.25rem 1rem; display: flex; justify-content: space-between; align-items: center; }
-        .list-count { font-weight: 700; color: var(--text-title); }
-        .view-toggles { display: flex; background: #F2F4F6; padding: 2px; border-radius: 8px; }
-        .view-btn { border: none; background: transparent; padding: 6px 10px; border-radius: 6px; cursor: pointer; color: #8B95A1; font-size: 0.8rem; font-weight: 600; }
-        .view-btn[aria-pressed="true"] { background: #fff; color: var(--text-title); box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
-
-        /* ==========================================
-         * 2. CARD & LIST DESIGN (Fixed)
-         * ==========================================
+        /* * APP SHELL CONTAINER 
+         * 모바일 기기처럼 보이게 하는 중앙 컨테이너
          */
-        .biz-list { padding: 0 1.25rem; }
+        .app-container {
+            width: 100%;
+            max-width: 480px; /* Mobile width constraint */
+            background: var(--bg-surface);
+            min-height: 100vh;
+            position: relative;
+            box-shadow: 0 0 40px rgba(0,0,0,0.1);
+            overflow-x: hidden;
+        }
+
+        /* * HEADER AREA */
+        .app-header {
+            padding: 3rem 1.25rem 1.5rem;
+            background: linear-gradient(180deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.8) 50%, #ffffff 100%);
+            position: relative;
+            z-index: 10;
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1.5rem;
+        }
+
+        .brand-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            background: var(--primary-light);
+            color: var(--primary);
+            font-size: 0.75rem;
+            font-weight: 700;
+            border-radius: var(--radius-full);
+        }
+
+        h1 {
+            font-size: 1.75rem;
+            font-weight: 800;
+            line-height: 1.2;
+            letter-spacing: -0.5px;
+            color: var(--text-title);
+        }
+
+        .subtitle {
+            font-size: 0.95rem;
+            color: var(--text-body);
+            margin-top: 0.5rem;
+        }
+
+        /* * HORIZONTAL SCROLL STATS */
+        .stats-scroller {
+            display: flex;
+            gap: 12px;
+            overflow-x: auto;
+            padding: 0.5rem 1.25rem 1.5rem;
+            margin: 0 -1.25rem;
+            scroll-snap-type: x mandatory;
+            scrollbar-width: none; /* Firefox */
+        }
+        .stats-scroller::-webkit-scrollbar { display: none; }
+
+        .stat-card {
+            min-width: 100px;
+            background: var(--bg-input);
+            padding: 1rem;
+            border-radius: var(--radius-m);
+            scroll-snap-align: start;
+            border: 1px solid rgba(0,0,0,0.03);
+        }
+
+        .stat-number {
+            display: block;
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--primary);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            color: var(--text-caption);
+            font-weight: 600;
+        }
+
+        /* * MAIN CONTENT */
+        main {
+            padding: 0 1.25rem 2rem; /* Side padding */
+        }
+
+        /* * SEARCH BAR (Stickyish feel) */
+        .search-wrapper {
+            position: sticky;
+            top: 1rem;
+            z-index: 100;
+            margin-bottom: 1.5rem;
+        }
+
+        .search-input-group {
+            position: relative;
+            box-shadow: var(--shadow-card);
+            border-radius: var(--radius-l);
+            background: white;
+        }
+
+        .search-input {
+            width: 100%;
+            height: 56px;
+            padding: 0 1rem 0 3.25rem;
+            border: 1px solid transparent;
+            border-radius: var(--radius-l);
+            background: white;
+            font-size: 1rem;
+            color: var(--text-title);
+            transition: all 0.2s;
+            appearance: none;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px var(--primary-light);
+        }
+
+        .search-input-icon {
+            position: absolute;
+            left: 1.25rem;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 20px;
+            height: 20px;
+            color: var(--primary);
+        }
+
+        /* * FILTERS & CATEGORIES */
+        .filters-area {
+            display: grid;
+            grid-template-columns: 1fr 1fr; /* 2 columns for selects */
+            gap: 10px;
+            margin-bottom: 1.5rem;
+        }
+
+        .filter-select {
+            width: 100%;
+            height: 48px;
+            padding: 0 1rem;
+            border: 1px solid #E5E8EB;
+            border-radius: var(--radius-m);
+            background: white url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%234E5968' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") no-repeat right 1rem center;
+            font-size: 0.9rem;
+            color: var(--text-body);
+            appearance: none; /* Remove default arrow */
+        }
         
-        .biz-card {
-            background: #fff; border-radius: 20px; margin-bottom: 1.5rem;
-            border: 1px solid #F2F4F6; box-shadow: var(--shadow-card);
-            overflow: hidden; display: flex; flex-direction: column;
+        .filter-select:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+        
+        /* Sort select spans full width */
+        #sort-select {
+            grid-column: span 2;
+        }
+
+        /* Horizontal Category List */
+        .category-section {
+            margin-bottom: 1.5rem;
+        }
+        .category-title {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--text-title);
+            margin-bottom: 0.75rem;
+            padding-left: 0.25rem;
+        }
+        
+        .category-list {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            padding-bottom: 4px;
+            /* Hide scrollbar */
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        .category-list::-webkit-scrollbar { display: none; }
+
+        .category-chip {
+            flex: 0 0 auto;
+            padding: 8px 16px;
+            border-radius: var(--radius-full);
+            background: white;
+            border: 1px solid #E5E8EB;
+            color: var(--text-body);
+            font-size: 0.85rem;
+            font-weight: 600;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .category-chip[aria-checked="true"] {
+            background: var(--text-title);
+            color: white;
+            border-color: var(--text-title);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        }
+        
+        .category-chip.all[aria-checked="true"] {
+            background: var(--primary);
+            border-color: var(--primary);
+        }
+
+        /* * RESULTS HEADER & TOGGLE */
+        .results-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding: 0 0.25rem;
+        }
+
+        .results-text {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-caption);
+        }
+        
+        .results-text strong {
+            color: var(--text-title);
+            font-weight: 800;
+        }
+
+        .filter-count {
+            background: var(--primary);
+            color: white;
+            border-radius: 10px;
+            padding: 2px 6px;
+            font-size: 0.7rem;
+            margin-left: 4px;
+        }
+
+        .view-toggle {
+            background: #E5E8EB;
+            padding: 2px;
+            border-radius: 8px;
+            display: flex;
+        }
+
+        .view-btn {
+            border: none;
+            background: transparent;
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-caption);
+            cursor: pointer;
+        }
+
+        .view-btn[aria-pressed="true"] {
+            background: white;
+            color: var(--text-title);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        /* * CARD DESIGN (Feed Style) */
+        .card-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .business-card {
+            background: white;
+            border-radius: var(--radius-l);
+            overflow: hidden;
+            box-shadow: var(--shadow-card);
+            border: 1px solid rgba(0,0,0,0.02);
             transition: transform 0.2s;
         }
         
-        /* Image Area */
-        .card-img-wrap {
-            position: relative; width: 100%; height: 200px;
-            background: #E5E8EB; flex-shrink: 0;
+        .business-card:active {
+            transform: scale(0.98);
         }
-        .card-img { width: 100%; height: 100%; object-fit: cover; }
-        .card-rating-badge {
-            position: absolute; bottom: 12px; left: 12px;
-            background: rgba(0,0,0,0.7); backdrop-filter: blur(4px);
-            padding: 4px 10px; border-radius: 20px;
-            color: white; font-size: 0.75rem; font-weight: 700;
-            display: flex; align-items: center; gap: 4px;
-        }
-        .star-icon { color: #FFD700; font-size: 0.9em; }
 
-        /* Content Area */
-        .card-content { padding: 1.25rem; flex: 1; min-width: 0; }
-        
-        .biz-name { font-size: 1.25rem; font-weight: 800; color: var(--text-title); margin-bottom: 0.5rem; line-height: 1.3; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        
-        .tag-row { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
-        .tag { font-size: 0.75rem; color: #555; background: #F3F4F6; padding: 4px 8px; border-radius: 6px; font-weight: 500; }
-        .tag.distance { background: #DCFCE7; color: #166534; font-weight: 700; }
-        
-        .biz-desc { 
-            font-size: 0.9rem; color: var(--text-body); line-height: 1.5; margin-bottom: 1rem;
-            display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+        .card-image-container {
+            position: relative;
+            height: 200px;
+            background: #E5E8EB;
+        }
+
+        .card-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .card-badge {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(4px);
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .badge-star { color: #F59E0B; }
+
+        .card-body {
+            padding: 1.25rem;
+        }
+
+        .card-header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 0.5rem;
+        }
+
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-title);
+            line-height: 1.3;
         }
         
-        .info-row { display: flex; align-items: center; gap: 6px; font-size: 0.85rem; color: var(--text-caption); margin-top: 4px; }
+        .card-distance {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--primary);
+            background: var(--primary-light);
+            padding: 4px 8px;
+            border-radius: 6px;
+            white-space: nowrap;
+            margin-left: 8px;
+            display: flex;
+            align-items: center;
+            gap: 2px;
+        }
 
-        /* Actions: CARD View (Large Buttons) */
+        .card-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-bottom: 1rem;
+        }
+
+        .tag {
+            font-size: 0.7rem;
+            color: var(--text-body);
+            background: var(--bg-input);
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-weight: 500;
+        }
+
+        .card-description {
+            font-size: 0.9rem;
+            color: var(--text-body);
+            line-height: 1.5;
+            margin-bottom: 1.25rem;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        /* Detail Rows */
+        .card-details {
+            border-top: 1px solid var(--bg-app);
+            padding-top: 1rem;
+            margin-bottom: 1.25rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .detail-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.85rem;
+            color: var(--text-body);
+        }
+        
+        .detail-icon {
+            color: var(--text-caption);
+            width: 16px;
+            height: 16px;
+        }
+
+        /* Action Buttons (Full width look) */
         .card-actions {
-            padding: 0 1.25rem 1.25rem;
-            display: flex; gap: 0.75rem; flex-wrap: wrap;
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr;
+            gap: 8px;
         }
-        .btn-action {
-            flex: 1; min-width: 120px;
-            display: flex; align-items: center; justify-content: center; gap: 6px;
-            padding: 12px 0; border-radius: 12px;
-            font-size: 0.95rem; font-weight: 700;
-            text-decoration: none; transition: transform 0.1s;
-            border: 1px solid transparent;
-        }
-        .btn-action:active { transform: scale(0.98); }
-        .btn-action.primary { background: var(--primary); color: white; box-shadow: 0 4px 12px rgba(91, 78, 250, 0.25); }
-        .btn-action.secondary { background: var(--primary-light); color: var(--primary); border-color: #E0E7FF; }
 
-        /* Actions: LIST View (Small Icons) */
-        .list-actions { display: none; gap: 8px; margin-top: 8px; } /* Hidden by default */
-        .icon-btn-circle {
-            width: 36px; height: 36px; border-radius: 50%;
-            background: #F3F4F6; color: var(--text-title);
-            display: flex; align-items: center; justify-content: center;
-            border: 1px solid #E5E7EB; text-decoration: none; transition: all 0.2s;
+        .action-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: var(--bg-input);
+            padding: 0.75rem 0;
+            border-radius: var(--radius-s);
+            color: var(--text-body);
+            text-decoration: none;
+            transition: all 0.2s;
         }
-        .icon-btn-circle:active { transform: scale(0.9); }
-        .icon-btn-circle.call { color: var(--primary); background: var(--primary-light); border-color: #E0E7FF; }
-
-        /* --- VIEW TOGGLE LOGIC --- */
         
-        /* 1. CARD VIEW (Default) */
-        .biz-list.view-card .list-actions { display: none !important; }
-        
-        /* 2. LIST VIEW */
-        .biz-list.view-list .biz-card { 
-            flex-direction: row; align-items: center; padding: 1rem; gap: 1rem; margin-bottom: 1rem;
+        .action-btn:active {
+            background: #E5E8EB;
         }
-        .biz-list.view-list .card-img-wrap { width: 80px; height: 80px; border-radius: 12px; }
-        .biz-list.view-list .card-rating-badge { display: none; }
-        .biz-list.view-list .card-content { padding: 0; }
-        
-        /* Hide complex elements in List View */
-        .biz-list.view-list .biz-desc, 
-        .biz-list.view-list .info-row,
-        .biz-list.view-list .card-actions { display: none !important; }
-        
-        /* Show simple elements in List View */
-        .biz-list.view-list .list-actions { display: flex; }
 
-        /* Utils */
+        .action-icon {
+            width: 20px;
+            height: 20px;
+            margin-bottom: 4px;
+            color: var(--text-title);
+        }
+        
+        .action-label {
+            font-size: 0.65rem;
+            font-weight: 600;
+        }
+
+        /* * TABLE VIEW (Styled as Compact List for Mobile) */
+        .table-container {
+            background: white;
+            border-radius: var(--radius-m);
+            overflow: hidden;
+            box-shadow: var(--shadow-card);
+        }
+
+        .business-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .business-table thead {
+            display: none; /* Hide header on mobile for cleaner look */
+        }
+
+        .business-table tr {
+            border-bottom: 1px solid var(--bg-app);
+            display: flex;
+            padding: 1rem;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .business-table td {
+            padding: 0;
+            display: block;
+        }
+        
+        /* Transform table cells to list layout via CSS */
+        .business-table tr td:first-child { /* Image */
+            width: 50px;
+            height: 50px;
+            flex-shrink: 0;
+        }
+        
+        .table-image {
+            width: 50px;
+            height: 50px;
+            border-radius: 10px;
+            object-fit: cover;
+        }
+        
+        .business-table tr td:nth-child(2) { /* Name */
+            flex-grow: 1;
+        }
+        
+        .table-name {
+            font-weight: 700;
+            font-size: 1rem;
+            color: var(--text-title);
+            margin-bottom: 2px;
+        }
+        
+        .business-table .table-rating { /* Rating reuse */
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        .business-table tr td:nth-child(3), /* Original Rating Col */
+        .business-table tr td:nth-child(4), /* Location */
+        .business-table tr td:nth-child(5), /* Tags */
+        .business-table tr td:nth-child(6) { /* Phone */
+            display: none; /* Simplify list view */
+        }
+        
+        .business-table tr td:last-child { /* Actions */
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .table-action-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--bg-input);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-body);
+            text-decoration: none;
+        }
+
+        /* * PAGINATION */
+        .pagination-section {
+            padding: 2rem 0 3rem;
+            text-align: center;
+        }
+        
+        .items-selector {
+            margin-bottom: 1rem;
+            font-size: 0.85rem;
+            color: var(--text-caption);
+        }
+        
+        .items-select {
+            border: none;
+            background: transparent;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .page-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            border: none;
+            background: white;
+            font-weight: 600;
+            color: var(--text-body);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            cursor: pointer;
+        }
+        
+        .page-btn[aria-current="page"] {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 4px 10px rgba(91, 78, 245, 0.3);
+        }
+
+        /* * UTILS & STATES */
+        .location-notice {
+            background: var(--primary);
+            color: white;
+            padding: 12px;
+            border-radius: var(--radius-m);
+            margin-bottom: 1.5rem;
+            font-size: 0.9rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            text-align: center;
+            animation: slideDown 0.3s ease;
+        }
+        
+        .location-notice.error {
+            background: #EF4444;
+        }
+        
+        .location-btn {
+            background: rgba(255,255,255,0.2);
+            border: 1px solid rgba(255,255,255,0.4);
+            color: white;
+            padding: 6px 12px;
+            border-radius: var(--radius-full);
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(91, 78, 245, 0.1);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            margin: 2rem auto;
+            animation: spin 0.8s infinite linear;
+        }
+
+        .loading-text, .empty-state, .error-state {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: var(--text-caption);
+        }
+        
+        .state-icon { font-size: 2.5rem; margin-bottom: 1rem; display: block; }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+        @keyframes slideDown { from { transform: translateY(-10px); opacity: 0; } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeInUp { from { transform: translateY(20px); opacity: 0; } to { opacity: 1; transform: translateY(0); } }
+        
         .hidden { display: none !important; }
-        .pagination { display: flex; justify-content: center; gap: 8px; margin-top: 2rem; }
-        .page-btn { width: 40px; height: 40px; border: 1px solid #E5E7EB; background: #fff; border-radius: 10px; font-weight: 600; cursor: pointer; }
-        .page-btn.active { background: var(--text-title); color: #fff; border-color: var(--text-title); }
-        .location-notice { background: #EEF2FF; padding: 12px 16px; border-radius: 12px; margin-bottom: 16px; font-size: 0.85rem; color: var(--primary); display: flex; justify-content: space-between; align-items: center; }
-        .btn-xs { background: var(--primary); color: white; border: none; padding: 4px 10px; border-radius: 6px; font-weight: 700; cursor: pointer; }
-
-        /* Fab */
-        .fab { position: fixed; bottom: 24px; right: 24px; width: 56px; height: 56px; border-radius: 50%; background: var(--text-title); color: white; border: none; display: flex; align-items: center; justify-content: center; box-shadow: 0 8px 20px rgba(0,0,0,0.2); cursor: pointer; z-index: 100; }
-        
-        /* Modal & Alert */
-        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 999; display: flex; }
-        
-        /* Bottom Sheet Style (for Subkeywords) */
-        .bottom-sheet { align-items: flex-end; }
-        .bottom-sheet .modal-content { width: 100%; background: white; border-radius: 20px 20px 0 0; padding: 1.5rem; max-height: 80vh; overflow-y: auto; }
-        
-        /* Alert Popup Style */
-        .alert-popup { align-items: center; justify-content: center; }
-        .alert-popup .modal-content { width: 85%; max-width: 320px; background: white; border-radius: 20px; padding: 1.5rem 1.25rem; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
-        
-        .modal-header { display: flex; justify-content: space-between; margin-bottom: 1rem; font-weight: 800; }
-        .subkeyword-item { padding: 12px 0; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; font-size: 0.95rem; }
+        .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0,0,0,0); }
     </style>
 </head>
 <body>
     <div class="app-container">
         <header class="app-header">
-            <div class="brand-logo">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color:var(--primary)">
-                    <circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
-                </svg>
-                Global K-Biz
+            <div class="header-top">
+                <div>
+                    <div class="brand-badge">Global Directory</div>
+                    <h1>한인 업체 찾기</h1>
+                    <p class="subtitle">전 세계 한인 비즈니스 네트워크</p>
+                </div>
+            </div>
+            
+            <div class="stats-scroller">
+                <div class="stat-card">
+                    <span class="stat-number" id="total-businesses">-</span>
+                    <span class="stat-label">등록 업체</span>
+                </div>
+                <div class="stat-item stat-card">
+                    <span class="stat-number" id="total-countries">-</span>
+                    <span class="stat-label">국가</span>
+                </div>
+                <div class="stat-item stat-card">
+                    <span class="stat-number" id="total-cities">-</span>
+                    <span class="stat-label">도시</span>
+                </div>
             </div>
         </header>
 
-        <section class="search-section">
-            <h1 class="hero-title">어떤 한인 업체를<br>찾으시나요?</h1>
-            
-            <div class="stats-box">
-                <div class="stat-item"><span class="stat-num" id="total-businesses">0</span><span class="stat-label">업체</span></div>
-                <div class="stat-divider"></div>
-                <div class="stat-item"><span class="stat-num" id="total-countries">0</span><span class="stat-label">국가</span></div>
-                <div class="stat-divider"></div>
-                <div class="stat-item"><span class="stat-num" id="total-cities">0</span><span class="stat-label">도시</span></div>
+        <main id="main">
+            <div class="search-wrapper">
+                <div class="search-input-group">
+                    <svg class="search-input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="11" cy="11" r="8"/>
+                        <path d="m21 21-4.35-4.35"/>
+                    </svg>
+                    <input 
+                        type="text" 
+                        id="search-input" 
+                        class="search-input"
+                        placeholder="검색어 (업체명, 지역)"
+                        autocomplete="off"
+                    />
+                </div>
             </div>
 
             <div id="location-notice" class="location-notice hidden"></div>
 
-            <div class="search-box">
-                <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-                <input type="text" id="search-input" class="search-input" placeholder="업체명, 지역, 키워드 검색">
-            </div>
-
-            <div class="filter-grid">
-                <select id="country-select" class="custom-select"><option value="">국가 선택</option></select>
-                <select id="city-select" class="custom-select" disabled><option value="">도시 선택</option></select>
-                <select id="sort-select" class="custom-select">
-                    <option value="rating">평점순</option>
-                    <option value="reviews">리뷰순</option>
-                    <option value="distance">거리순</option>
-                </select>
-            </div>
-        </section>
-
-        <section class="category-section">
-            <div class="main-cat-scroll" id="main-category-list"></div>
-            <div class="sub-cat-scroll" id="category-list"></div>
-        </section>
-
-        <div class="list-header">
-            <span class="list-count" id="results-text">결과 0개</span>
-            <div class="view-toggles">
-                <button class="view-btn" id="card-view-btn" aria-pressed="true">카드</button>
-                <button class="view-btn" id="table-view-btn" aria-pressed="false">리스트</button>
-            </div>
-        </div>
-        
-        <div id="results-container" class="biz-list view-card"></div>
-        <div id="pagination-section"></div>
-
-        <button class="fab" id="share-fab">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.59 13.51 6.83 3.98"/><path d="m15.41 6.51-6.82 3.98"/></svg>
-        </button>
-
-        <div id="subkeyword-modal" class="modal-overlay bottom-sheet hidden">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h3 id="modal-category-title">세부 선택</h3>
-                    <button id="modal-close-btn" style="border:none;background:none;font-size:1.5rem">×</button>
+            <div class="filters-area">
+                <div class="filter-item">
+                    <select id="country-select" class="filter-select">
+                        <option value="">전체 국가</option>
+                    </select>
                 </div>
-                <div id="subkeyword-list"></div>
+                <div class="filter-item">
+                    <select id="city-select" class="filter-select" disabled>
+                        <option value="">도시 선택</option>
+                    </select>
+                </div>
+                <div class="filter-item" style="grid-column: span 2;">
+                    <select id="sort-select" class="filter-select">
+                        <option value="rating">평점 높은순</option>
+                        <option value="reviews">리뷰 많은순</option>
+                        <option value="distance">가까운순</option>
+                    </select>
+                </div>
             </div>
-        </div>
 
-        <div id="alert-modal" class="modal-overlay alert-popup hidden">
-            <div class="modal-content">
-                <p id="alert-msg" style="margin: 1rem 0 1.5rem; font-size: 1.05rem; font-weight: 600; color: var(--text-title); line-height: 1.5; word-break: keep-all;"></p>
-                <button id="alert-ok-btn" style="width: 100%; padding: 14px 0; border-radius: 12px; background-color: var(--primary); color: #fff; font-size: 1rem; font-weight: 700; border: none; cursor: pointer; transition: background 0.2s;">
-                    확인
-                </button>
+            <div class="category-section">
+                <div class="category-title">카테고리</div>
+                <div class="category-list" id="category-list">
+                    </div>
             </div>
-        </div>
 
+            <div class="results-bar">
+                <div class="results-info">
+                    <div class="results-text" id="results-text">결과 <strong>0</strong>개</div>
+                </div>
+                <div class="view-toggle">
+                    <button class="view-btn" id="card-view-btn" aria-pressed="true">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+                    </button>
+                    <button class="view-btn" id="table-view-btn" aria-pressed="false">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18"/><path d="M3 6h18"/><path d="M3 18h18"/></svg>
+                    </button>
+                </div>
+            </div>
+
+            <div id="results-container"></div>
+            
+            <div id="pagination-section"></div>
+        </main>
     </div>
 
     <script>
     (function() {
         'use strict';
         
+        // SVG Icons (FIXED: Added fill="none" and stroke properties to all SVGs)
         const ICONS = {
-            phone: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>',
-            map: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>',
-            email: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>',
-            web: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>',
-            phoneSmall: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>',
-            mapSmall: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>'
+            phone: '<svg class="icon action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>',
+            map: '<svg class="icon action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>',
+            email: '<svg class="icon action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>',
+            web: '<svg class="icon action-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>',
+            location: '<svg class="icon detail-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>',
+            clock: '<svg class="icon detail-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>',
+            phoneDetail: '<svg class="icon detail-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>',
+            distance: '<svg class="icon" style="width:14px; height:14px; flex-shrink: 0;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>'
         };
-
+        
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+        
+        function validateInput(value, maxLength = 100) {
+            if (typeof value !== 'string') return false;
+            if (value.length > maxLength) return false;
+            return !/<script|javascript:|onerror=|onclick=/i.test(value);
+        }
+        
+        function smoothScroll(element) {
+            if (!element) return;
+            // Adjusted offset for sticky header
+            const offset = element.getBoundingClientRect().top + window.pageYOffset - 140; 
+            window.scrollTo({ top: offset, behavior: 'smooth' });
+        }
+        
         function calculateDistance(lat1, lon1, lat2, lon2) {
             const R = 6371;
             const dLat = (lat2 - lat1) * Math.PI / 180;
             const dLon = (lon2 - lon1) * Math.PI / 180;
-            const a = Math.sin(dLat / 2) ** 2 + Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLon / 2) ** 2;
+            const a = Math.sin(dLat / 2) ** 2 +
+                        Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                        Math.sin(dLon / 2) ** 2;
             return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
         }
+        
         function formatDistance(distance) {
             if (distance < 1) return `${Math.round(distance * 1000)}m`;
-            return `${distance.toFixed(1)}km`;
+            if (distance < 10) return `${distance.toFixed(1)}km`;
+            return `${Math.round(distance)}km`;
         }
         
         let businessData = [];
-        const GAS_URL = 'https://script.google.com/macros/s/AKfycbwmE_NZgRjuanUYsLGopJ-YmHDecQYtiOhGe77MAlFXjkwYhgnGFh0m14IUvNIp-9lX/exec';
+        const GAS_URL = 'https://script.google.com/macros/s/AKfycbwTKL8rwbswRz1mVyouCfPlLQ7cBfkpo5A7JvUYduaAwozIBRhLsWJsP4dTMwhZzP3p1w/exec';
+        
+        async function fetchData() {
+            try {
+                const res = await fetch(GAS_URL);
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                const data = await res.json();
+                if (data.error) throw new Error(data.error);
+                return data;
+            } catch (error) {
+                console.error('Fetch error:', error);
+                throw error;
+            }
+        }
         
         const state = {
             currentView: 'card',
             filteredData: [],
             currentPage: 1,
-            itemsPerPage: 10,
-            selectedMainCategory: '전체',
+            itemsPerPage: 12,
             selectedCategories: new Set(['전체']),
-            selectedSubkeyword: '',
             searchQuery: '',
             selectedCountry: '',
             selectedCity: '',
             sortBy: 'rating',
             userLocation: null,
-            isLoading: false
+            isLoading: false,
+            error: null
         };
         
         const $ = {
@@ -372,7 +864,6 @@
             countrySelect: document.getElementById('country-select'),
             citySelect: document.getElementById('city-select'),
             sortSelect: document.getElementById('sort-select'),
-            mainCategoryList: document.getElementById('main-category-list'),
             categoryList: document.getElementById('category-list'),
             cardViewBtn: document.getElementById('card-view-btn'),
             tableViewBtn: document.getElementById('table-view-btn'),
@@ -380,16 +871,6 @@
             resultsText: document.getElementById('results-text'),
             paginationSection: document.getElementById('pagination-section'),
             locationNotice: document.getElementById('location-notice'),
-            subkeywordModal: document.getElementById('subkeyword-modal'),
-            subkeywordList: document.getElementById('subkeyword-list'),
-            modalCategoryTitle: document.getElementById('modal-category-title'),
-            modalCloseBtn: document.getElementById('modal-close-btn'),
-            shareFab: document.getElementById('share-fab'),
-            // Custom Alert
-            alertModal: document.getElementById('alert-modal'),
-            alertMsg: document.getElementById('alert-msg'),
-            alertOkBtn: document.getElementById('alert-ok-btn'),
-            // Stats
             totalBusinesses: document.getElementById('total-businesses'),
             totalCountries: document.getElementById('total-countries'),
             totalCities: document.getElementById('total-cities')
@@ -400,23 +881,14 @@
         async function init() {
             try {
                 state.isLoading = true;
-                renderResults(); 
+                renderResults();
                 
-                const res = await fetch(GAS_URL);
-                if (!res.ok) throw new Error(`HTTP ${res.status}`);
-                const data = await res.json();
-                
-                businessData = data.map(b => ({
-                    ...b,
-                    subkeywords: Array.isArray(b.subkeywords) ? b.subkeywords : []
-                }));
-                
+                businessData = await fetchData();
                 state.filteredData = [...businessData];
                 state.isLoading = false;
                 
                 updateStats();
                 populateCountries();
-                populateMainCategories();
                 populateCategories();
                 setupEvents();
                 getUserLocation();
@@ -424,22 +896,14 @@
                 renderResults();
                 renderPagination();
                 updateResultCount();
+                initLazyLoading();
             } catch (error) {
                 state.isLoading = false;
+                state.error = '데이터를 불러오는 데 실패했습니다.';
                 renderResults();
-                console.error(error);
             }
         }
         
-        // --- Custom Alert Helper ---
-        function showAlert(message) {
-            $.alertMsg.innerHTML = message;
-            $.alertModal.classList.remove('hidden');
-            $.alertOkBtn.onclick = () => {
-                $.alertModal.classList.add('hidden');
-            };
-        }
-
         function updateStats() {
             const countries = new Set(businessData.map(b => b.country));
             const cities = new Set(businessData.map(b => b.city));
@@ -451,320 +915,598 @@
         
         function animateNumber(element, target) {
             let current = 0;
-            const duration = 1500;
-            const steps = 30;
-            const increment = target / steps;
-            const stepTime = duration / steps;
+            const increment = target / 50;
             const timer = setInterval(() => {
                 current += increment;
                 if (current >= target) {
                     element.textContent = target;
                     clearInterval(timer);
                 } else {
-                    element.textContent = Math.ceil(current);
+                    element.textContent = Math.floor(current);
                 }
-            }, stepTime);
+            }, 20);
         }
 
-        function populateCountries() {
-            const countries = [...new Set(businessData.map(b => b.country))].sort();
-            $.countrySelect.innerHTML = '<option value="">전체 국가</option>';
-            countries.forEach(c => $.countrySelect.appendChild(new Option(c, c)));
+        function showLocationNotice(msg, type) {
+            let textSpan = $.locationNotice.querySelector('.location-notice-text');
+            
+            if (!textSpan) {
+                textSpan = document.createElement('span');
+                textSpan.className = 'location-notice-text';
+                const btn = $.locationNotice.querySelector('.location-btn');
+                if (btn) {
+                    $.locationNotice.insertBefore(textSpan, btn);
+                } else {
+                    $.locationNotice.appendChild(textSpan);
+                }
+            }
+            
+            textSpan.textContent = msg;
+            
+            $.locationNotice.className = `location-notice ${type}`;
+            $.locationNotice.classList.remove('hidden');
         }
-        function populateCities(country) {
-            $.citySelect.innerHTML = '<option value="">' + (country ? '전체 도시' : '국가 먼저 선택') + '</option>';
-            $.citySelect.disabled = !country;
-            if (country) {
-                const cities = [...new Set(businessData.filter(b => b.country === country).map(b => b.city))].sort();
-                cities.forEach(c => $.citySelect.appendChild(new Option(c, c)));
+
+        function getUserLocation() {
+            if (!navigator.geolocation) {
+                showLocationNotice('위치 서비스를 지원하지 않습니다.', 'error');
+                disableDistanceSort();
+                return;
+            }
+            showLocationNotice('💡 거리순 정렬을 원하시면 아래 버튼을 클릭하세요.', 'info');
+            createLocationButton();
+            disableDistanceSort();
+        }
+        
+        function createLocationButton() {
+            const btn = document.createElement('button');
+            btn.className = 'location-btn';
+            btn.innerHTML = `
+                <svg class="icon" viewBox="0 0 24 24" style="width:16px; height:16px; stroke-width: 2.5; flex-shrink: 0; fill:none; stroke:currentColor; stroke-linecap:round; stroke-linejoin:round;">
+                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+                    <circle cx="12" cy="10" r="3"/>
+                </svg>
+                <span>내 위치 사용</span>
+            `;
+            btn.addEventListener('click', requestLocation);
+            $.locationNotice.appendChild(btn);
+        }
+        
+        function requestLocation() {
+            showLocationNotice('📍 위치 정보를 가져오는 중...', 'info');
+            navigator.geolocation.getCurrentPosition(
+                (pos) => {
+                    state.userLocation = {
+                        latitude: pos.coords.latitude,
+                        longitude: pos.coords.longitude
+                    };
+                    businessData.forEach(b => {
+                        b.distance = calculateDistance(
+                            state.userLocation.latitude,
+                            state.userLocation.longitude,
+                            b.latitude,
+                            b.longitude
+                        );
+                    });
+                    showLocationNotice('✅ 위치 정보를 가져왔습니다!', 'success');
+                    enableDistanceSort();
+                    if (state.sortBy === 'distance') handleFilterChange();
+
+                    const btn = $.locationNotice.querySelector('.location-btn');
+                    if (btn) btn.classList.add('hidden');
+
+                    setTimeout(() => $.locationNotice.classList.add('hidden'), 3000);
+                },
+                () => {
+                    showLocationNotice('⚠️ 위치 정보를 가져올 수 없습니다.', 'error');
+                    if (state.sortBy === 'distance') {
+                        state.sortBy = 'rating';
+                        $.sortSelect.value = 'rating';
+                        handleFilterChange();
+                    }
+                }
+            );
+        }
+        
+        function disableDistanceSort() {
+            const opt = $.sortSelect.querySelector('option[value="distance"]');
+            if (opt) {
+                opt.disabled = true;
+                opt.textContent = '가까운순 (위치 필요)';
             }
         }
         
-        function populateMainCategories() {
-            let filtered = businessData;
-            if (state.selectedCountry) filtered = filtered.filter(b => b.country === state.selectedCountry);
-            if (state.selectedCity) filtered = filtered.filter(b => b.city === state.selectedCity);
-
-            const mainCategories = new Set();
-            filtered.forEach(b => {
-                if (b.category && b.category.trim()) mainCategories.add(b.category.trim());
-            });
-
-            const sorted = ['전체', ...Array.from(mainCategories).sort()];
-            $.mainCategoryList.innerHTML = '';
-            
-            sorted.forEach(cat => {
-                const btn = document.createElement('button');
-                btn.className = 'main-cat-btn';
-                btn.textContent = cat;
-                btn.setAttribute('aria-checked', state.selectedMainCategory === cat);
-                btn.onclick = () => {
-                    state.selectedMainCategory = cat;
-                    state.selectedCategories.clear(); state.selectedCategories.add('전체');
-                    state.selectedSubkeyword = '';
-                    populateMainCategories(); populateCategories(); handleFilterChange();
-                };
-                $.mainCategoryList.appendChild(btn);
+        function enableDistanceSort() {
+            const opt = $.sortSelect.querySelector('option[value="distance"]');
+            if (opt) {
+                opt.disabled = false;
+                opt.textContent = '가까운순';
+            }
+        }
+        
+        function populateCountries() {
+            const countries = [...new Set(businessData.map(b => b.country))].sort();
+            $.countrySelect.innerHTML = '<option value="">전체 국가</option>';
+            countries.forEach(c => {
+                const opt = document.createElement('option');
+                opt.value = opt.textContent = c;
+                $.countrySelect.appendChild(opt);
             });
         }
-
+        
+        function populateCities(country) {
+            if (!country) {
+                $.citySelect.innerHTML = '<option value="">국가를 먼저 선택하세요</option>';
+                $.citySelect.disabled = true;
+                return;
+            }
+            const cities = [...new Set(businessData.filter(b => b.country === country).map(b => b.city))].sort();
+            $.citySelect.innerHTML = '<option value="">전체 도시</option>';
+            cities.forEach(c => {
+                const opt = document.createElement('option');
+                opt.value = opt.textContent = c;
+                $.citySelect.appendChild(opt);
+            });
+            $.citySelect.disabled = false;
+        }
+        
         function populateCategories() {
-            let filtered = businessData;
-            if (state.selectedCountry) filtered = filtered.filter(b => b.country === state.selectedCountry);
-            if (state.selectedCity) filtered = filtered.filter(b => b.city === state.selectedCity);
-            if (state.selectedMainCategory !== '전체') filtered = filtered.filter(b => b.category === state.selectedMainCategory);
+            let filteredBusinesses = businessData;
+            
+            if (state.selectedCountry) {
+                filteredBusinesses = filteredBusinesses.filter(b => b.country === state.selectedCountry);
+            }
+            
+            if (state.selectedCity) {
+                filteredBusinesses = filteredBusinesses.filter(b => b.city === state.selectedCity);
+            }
             
             const categories = new Set();
-            filtered.forEach(b => {
-                if (Array.isArray(b.services)) b.services.forEach(s => categories.add(s));
-            });
-            
+            filteredBusinesses.forEach(b => b.services.forEach(s => categories.add(s)));
             const sorted = ['전체', ...Array.from(categories).sort()];
+            
             $.categoryList.innerHTML = '';
-            
             sorted.forEach(cat => {
-                const btn = document.createElement('button');
-                btn.className = 'cat-chip';
-                btn.textContent = cat;
-                btn.setAttribute('aria-checked', state.selectedCategories.has(cat));
-                btn.onclick = () => handleCategoryClick(cat);
-                $.categoryList.appendChild(btn);
+                const chip = document.createElement('button');
+                chip.className = cat === '전체' ? 'category-chip all' : 'category-chip';
+                chip.setAttribute('role', 'checkbox');
+                chip.setAttribute('aria-checked', cat === '전체' ? 'true' : 'false');
+                chip.dataset.category = cat;
+                chip.textContent = cat;
+                chip.addEventListener('click', () => handleCategoryClick(cat));
+                $.categoryList.appendChild(chip);
             });
-        }
-
-        function handleCategoryClick(category) {
-            if (category === '전체') {
-                state.selectedCategories.clear(); state.selectedCategories.add('전체'); state.selectedSubkeyword = '';
-            } else {
-                state.selectedCategories.delete('전체');
-                if (state.selectedCategories.has(category)) {
-                    state.selectedCategories.delete(category);
-                    if (state.selectedCategories.size === 0) state.selectedCategories.add('전체');
-                } else {
-                    if(checkHasSubkeywords(category)) { showSubkeywordModal(category); return; }
-                    state.selectedCategories.add(category);
-                }
-            }
-            populateCategories(); handleFilterChange();
-        }
-
-        function checkHasSubkeywords(category) {
-            let filtered = businessData;
-            if (state.selectedMainCategory !== '전체') filtered = filtered.filter(b => b.category === state.selectedMainCategory);
-            return filtered.some(b => Array.isArray(b.services) && b.services.includes(category) && Array.isArray(b.subkeywords) && b.subkeywords.length > 0);
-        }
-
-        function showSubkeywordModal(category) {
-            $.modalCategoryTitle.textContent = `${category} 세부 선택`;
-            let filtered = businessData;
-            if (state.selectedMainCategory !== '전체') filtered = filtered.filter(b => b.category === state.selectedMainCategory);
             
-            const counts = {};
-            filtered.forEach(b => {
-                if (Array.isArray(b.services) && b.services.includes(category) && Array.isArray(b.subkeywords)) {
-                    b.subkeywords.forEach(sk => { if(sk) counts[sk] = (counts[sk]||0) + 1; });
-                }
-            });
-
-            $.subkeywordList.innerHTML = '';
-            const allItem = document.createElement('div');
-            allItem.className = 'subkeyword-item';
-            allItem.innerHTML = `<span>전체 ${category}</span>`;
-            allItem.onclick = () => { state.selectedCategories.clear(); state.selectedCategories.add(category); state.selectedSubkeyword = ''; $.subkeywordModal.classList.add('hidden'); populateCategories(); handleFilterChange(); };
-            $.subkeywordList.appendChild(allItem);
-
-            Object.keys(counts).forEach(sk => {
-                const item = document.createElement('div');
-                item.className = 'subkeyword-item';
-                item.innerHTML = `<span>${sk}</span><span>${counts[sk]}</span>`;
-                item.onclick = () => { state.selectedCategories.clear(); state.selectedCategories.add(category); state.selectedSubkeyword = sk; $.subkeywordModal.classList.add('hidden'); populateCategories(); handleFilterChange(); };
-                $.subkeywordList.appendChild(item);
-            });
-            $.subkeywordModal.classList.remove('hidden');
-        }
-
-        function handleFilterChange() {
-            state.currentPage = 1;
-            applyFilters(); applySorting(); renderResults(); renderPagination(); updateResultCount();
-        }
-
-        function applyFilters() {
-            state.filteredData = businessData.filter(b => {
-                if (state.searchQuery) {
-                    const q = state.searchQuery.toLowerCase();
-                    if (![b.businessName, b.address, b.feature].some(f => String(f).toLowerCase().includes(q))) return false;
-                }
-                if (state.selectedCountry && b.country !== state.selectedCountry) return false;
-                if (state.selectedCity && b.city !== state.selectedCity) return false;
-                if (state.selectedMainCategory !== '전체' && b.category !== state.selectedMainCategory) return false;
-                
-                if (!state.selectedCategories.has('전체')) {
-                    if (!b.services || !b.services.some(s => state.selectedCategories.has(s))) return false;
-                    if (state.selectedSubkeyword && (!b.subkeywords || !b.subkeywords.includes(state.selectedSubkeyword))) return false;
-                }
-                return true;
-            });
-        }
-
-        function applySorting() {
-            state.filteredData.sort((a, b) => {
-                if (state.sortBy === 'rating') return b.rating - a.rating;
-                if (state.sortBy === 'reviews') return b.reviewCount - a.reviewCount;
-                if (state.sortBy === 'distance') return (a.distance || 99999) - (b.distance || 99999);
-                return 0;
-            });
-        }
-
-        function switchView(view) {
-            state.currentView = view;
-            $.cardViewBtn.setAttribute('aria-pressed', view === 'card');
-            $.tableViewBtn.setAttribute('aria-pressed', view === 'list');
-            if (view === 'card') {
-                $.resultsContainer.classList.remove('view-list');
-                $.resultsContainer.classList.add('view-card');
-            } else {
-                $.resultsContainer.classList.remove('view-card');
-                $.resultsContainer.classList.add('view-list');
+            if (!state.selectedCategories.has('전체') && 
+                !Array.from(state.selectedCategories).some(cat => categories.has(cat))) {
+                state.selectedCategories.clear();
+                state.selectedCategories.add('전체');
             }
-        }
-
-        function renderResults() {
-            $.resultsContainer.innerHTML = '';
-            
-            if (state.isLoading) {
-                $.resultsContainer.innerHTML = '<div style="text-align:center;padding:3rem;color:#888;">데이터 불러오는 중...</div>';
-                return;
-            }
-            if (state.filteredData.length === 0) {
-                $.resultsContainer.innerHTML = '<div style="text-align:center;padding:3rem;color:#888;">검색 결과가 없습니다.</div>';
-                return;
-            }
-
-            const start = (state.currentPage - 1) * state.itemsPerPage;
-            const end = start + state.itemsPerPage;
-            const pageData = state.filteredData.slice(start, end);
-
-            pageData.forEach(b => {
-                const div = document.createElement('div');
-                div.className = 'biz-card';
-                const imgUrl = b.image || "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' fill='%23eee'%3E%3Crect width='100' height='100'/%3E%3C/svg%3E";
-                const distTag = b.distance ? `<span class="tag distance">${formatDistance(b.distance)}</span>` : '';
-                const tags = (b.services || []).slice(0, 2).map(s => `<span class="tag">${s}</span>`).join('');
-                
-                // Secondary buttons for Card View
-                const mapBtn = b.googleMapsUrl ? `<a href="${b.googleMapsUrl}" target="_blank" class="btn-action secondary">${ICONS.map}<span class="action-text">지도</span></a>` : '';
-                const emailBtn = b.email ? `<a href="mailto:${b.email}" class="btn-action secondary">${ICONS.email}<span class="action-text">이메일</span></a>` : '';
-                const webBtn = b.website ? `<a href="https://${b.website}" target="_blank" class="btn-action secondary">${ICONS.web}<span class="action-text">웹사이트</span></a>` : '';
-                
-                // List View Icons (Corrected: No Text Buttons)
-                const listMap = b.googleMapsUrl ? `<a href="${b.googleMapsUrl}" target="_blank" class="icon-btn-circle" title="지도보기">${ICONS.mapSmall}</a>` : '';
-                
-                div.innerHTML = `
-                    <div class="card-img-wrap">
-                        <img src="${imgUrl}" class="card-img" alt="${b.businessName}" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'100\' height=\'100\' fill=\'%23eee\'%3E%3Crect width=\'100\' height=\'100\'/%3E%3C/svg%3E'">
-                        <div class="card-rating-badge"><span class="star-icon">★</span>${b.rating}</div>
-                    </div>
-                    <div class="card-content">
-                        <div class="biz-name">${b.businessName}</div>
-                        <div class="tag-row">${distTag}${tags}</div>
-                        <div class="biz-desc">${b.feature}</div>
-                        <div class="info-row" style="margin-bottom:2px">📍 ${b.address}</div>
-                        <div class="info-row">⏰ ${b.hours}</div>
-                        
-                        <div class="list-actions">
-                            <a href="tel:${b.phone}" class="icon-btn-circle call" title="전화걸기">${ICONS.phoneSmall}</a>
-                            ${listMap}
-                        </div>
-                    </div>
-                    
-                    <div class="card-actions">
-                        <a href="tel:${b.phone}" class="btn-action primary">${ICONS.phone}<span class="action-text">전화</span></a>
-                        ${mapBtn}
-                        ${webBtn}
-                    </div>
-                `;
-                $.resultsContainer.appendChild(div);
-            });
-        }
-
-        function renderPagination() {
-            const totalPages = Math.ceil(state.filteredData.length / state.itemsPerPage);
-            $.paginationSection.innerHTML = '';
-            if (totalPages <= 1) return;
-
-            const div = document.createElement('div');
-            div.className = 'pagination';
-            
-            for(let i=1; i<=totalPages; i++) {
-                if(i===1 || i===totalPages || (i >= state.currentPage-1 && i <= state.currentPage+1)) {
-                    const btn = document.createElement('button');
-                    btn.className = `page-btn ${i===state.currentPage ? 'active':''}`;
-                    btn.textContent = i;
-                    btn.onclick = () => { state.currentPage = i; renderResults(); renderPagination(); window.scrollTo(0,0); };
-                    div.appendChild(btn);
-                }
-            }
-            $.paginationSection.appendChild(div);
-        }
-
-        function updateResultCount() {
-            $.resultsText.textContent = `결과 ${state.filteredData.length}개`;
         }
         
         function setupEvents() {
             $.searchInput.addEventListener('input', (e) => {
                 clearTimeout(searchTimeout);
                 searchTimeout = setTimeout(() => {
-                    state.searchQuery = e.target.value.trim();
-                    handleFilterChange();
+                    if (validateInput(e.target.value, 200)) {
+                        state.searchQuery = e.target.value.trim();
+                        handleFilterChange();
+                    }
                 }, 300);
             });
+            
             $.countrySelect.addEventListener('change', (e) => {
                 state.selectedCountry = e.target.value;
-                state.selectedCity = ''; $.citySelect.value = '';
+                state.selectedCity = '';
+                $.citySelect.value = '';
                 populateCities(e.target.value);
-                state.selectedMainCategory = '전체';
-                populateMainCategories(); populateCategories(); handleFilterChange();
-            });
-            $.citySelect.addEventListener('change', (e) => {
-                state.selectedCity = e.target.value;
+                populateCategories();
                 handleFilterChange();
             });
+            
+            $.citySelect.addEventListener('change', (e) => {
+                state.selectedCity = e.target.value;
+                populateCategories();
+                handleFilterChange();
+            });
+            
             $.sortSelect.addEventListener('change', (e) => {
                 state.sortBy = e.target.value;
                 handleFilterChange();
             });
             
             $.cardViewBtn.addEventListener('click', () => switchView('card'));
-            $.tableViewBtn.addEventListener('click', () => switchView('list'));
-
-            $.modalCloseBtn.onclick = () => $.subkeywordModal.classList.add('hidden');
-            $.shareFab.onclick = () => {
-                navigator.clipboard.writeText(window.location.href).then(() => showAlert('주소가 복사되었습니다.'));
-            };
+            $.tableViewBtn.addEventListener('click', () => switchView('table'));
         }
         
-        function getUserLocation() {
-            if (!navigator.geolocation) return;
-            $.locationNotice.classList.remove('hidden');
-            $.locationNotice.innerHTML = `<span>내 주변 업체 찾기</span><button class="btn-xs" id="btn-loc">허용</button>`;
-            document.getElementById('btn-loc').onclick = () => {
-                navigator.geolocation.getCurrentPosition(pos => {
-                    state.userLocation = { latitude: pos.coords.latitude, longitude: pos.coords.longitude };
-                    businessData.forEach(b => {
-                        b.distance = calculateDistance(state.userLocation.latitude, state.userLocation.longitude, b.latitude, b.longitude);
-                    });
-                    $.locationNotice.classList.add('hidden');
-                    
-                    // [변경됨] 기본 alert 대신 커스텀 showAlert 사용
-                    showAlert('위치 확인 완료.<br>거리순 정렬이 가능합니다.');
-                    
-                    handleFilterChange();
-                });
-            };
+        function handleCategoryClick(category) {
+            if (category === '전체') {
+                state.selectedCategories.clear();
+                state.selectedCategories.add('전체');
+            } else {
+                state.selectedCategories.delete('전체');
+                if (state.selectedCategories.has(category)) {
+                    state.selectedCategories.delete(category);
+                    if (state.selectedCategories.size === 0) {
+                        state.selectedCategories.add('전체');
+                    }
+                } else {
+                    state.selectedCategories.add(category);
+                }
+            }
+            updateChipStates();
+            handleFilterChange();
         }
-
-        init();
+        
+        function updateChipStates() {
+            $.categoryList.querySelectorAll('.category-chip').forEach(chip => {
+                const isSelected = state.selectedCategories.has(chip.dataset.category);
+                chip.setAttribute('aria-checked', isSelected);
+            });
+        }
+        
+        function handleFilterChange() {
+            state.currentPage = 1;
+            applyFilters();
+            applySorting();
+            renderResults();
+            renderPagination();
+            updateResultCount();
+        }
+        
+        function applyFilters() {
+            state.filteredData = businessData.filter(b => {
+                if (state.searchQuery) {
+                    const q = state.searchQuery.toLowerCase();
+                    if (![b.businessName, b.address, b.feature].some(f => String(f).toLowerCase().includes(q))) {
+                        return false;
+                    }
+                }
+                if (state.selectedCountry && b.country !== state.selectedCountry) return false;
+                if (state.selectedCity && b.city !== state.selectedCity) return false;
+                if (!state.selectedCategories.has('전체')) {
+                    if (!b.services.some(s => state.selectedCategories.has(s))) return false;
+                }
+                return true;
+            });
+        }
+        
+        function applySorting() {
+            state.filteredData.sort((a, b) => {
+                switch (state.sortBy) {
+                    case 'rating': return b.rating - a.rating;
+                    case 'reviews': return b.reviewCount - a.reviewCount;
+                    case 'distance': return (a.distance || 9999) - (b.distance || 9999);
+                    default: return 0;
+                }
+            });
+        }
+        
+        function switchView(view) {
+            state.currentView = view;
+            $.cardViewBtn.setAttribute('aria-pressed', view === 'card');
+            $.tableViewBtn.setAttribute('aria-pressed', view === 'table');
+            renderResults();
+        }
+        
+        function renderResults() {
+            $.resultsContainer.innerHTML = '';
+            
+            if (state.isLoading) {
+                $.resultsContainer.innerHTML = `
+                    <div class="loading">
+                        <div class="spinner"></div>
+                        <div class="loading-text">Loading...</div>
+                    </div>
+                `;
+                return;
+            }
+            
+            if (state.error) {
+                $.resultsContainer.innerHTML = `
+                    <div class="error-state">
+                        <div class="state-icon">⚠️</div>
+                        <h3 class="state-title">오류 발생</h3>
+                        <p class="state-description">${escapeHtml(state.error)}</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            if (state.filteredData.length === 0) {
+                $.resultsContainer.innerHTML = `
+                    <div class="empty-state">
+                        <div class="state-icon">🔍</div>
+                        <h3 class="state-title">검색 결과가 없습니다</h3>
+                        <p class="state-description">다른 검색 조건을 시도해보세요</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            const start = (state.currentPage - 1) * state.itemsPerPage;
+            const end = start + state.itemsPerPage;
+            const pageData = state.filteredData.slice(start, end);
+            
+            if (state.currentView === 'card') {
+                renderCardView(pageData);
+            } else {
+                renderTableView(pageData);
+            }
+            
+            if (state.currentPage > 1) smoothScroll($.resultsContainer);
+        }
+        
+        function renderCardView(data) {
+            const grid = document.createElement('div');
+            grid.className = 'card-grid';
+            
+            data.forEach((b, idx) => {
+                const card = document.createElement('article');
+                card.className = 'business-card';
+                card.style.animation = `fadeInUp 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) ${idx * 0.05}s both`;
+                
+                const imgAttr = state.currentPage === 1 
+                    ? `src="${escapeHtml(b.image)}"` 
+                    : `data-src="${escapeHtml(b.image)}" loading="lazy"`;
+                
+                const distance = b.distance && state.userLocation
+                    ? `<div class="card-distance">${ICONS.distance} ${formatDistance(b.distance)}</div>`
+                    : '';
+                
+                const tags = b.services.map(s => 
+                    `<span class="tag">${escapeHtml(s)}</span>`
+                ).join('');
+                
+                const email = b.email 
+                    ? `<a href="mailto:${escapeHtml(b.email)}" class="action-btn">${ICONS.email}<span class="action-label">이메일</span></a>`
+                    : '';
+                
+                const website = b.website
+                    ? `<a href="https://${escapeHtml(b.website)}" target="_blank" rel="noopener" class="action-btn">${ICONS.web}<span class="action-label">웹사이트</span></a>`
+                    : '';
+                
+                card.innerHTML = `
+                    <div class="card-image-container">
+                        <img ${imgAttr} alt="${escapeHtml(b.businessName)}" class="card-image">
+                        <div class="card-badge">
+                            <span class="badge-star">★</span>
+                            <span class="badge-rating">${b.rating}</span>
+                            <span class="badge-reviews">(${b.reviewCount})</span>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="card-header-row">
+                            <h3 class="card-title">${escapeHtml(b.businessName)}</h3>
+                            ${distance}
+                        </div>
+                        <div class="card-tags">${tags}</div>
+                        <p class="card-description">${escapeHtml(b.feature)}</p>
+                        
+                        <div class="card-details">
+                            <div class="detail-item">
+                                ${ICONS.location}
+                                <span class="detail-text">${escapeHtml(b.address)}</span>
+                            </div>
+                            <div class="detail-item">
+                                ${ICONS.clock}
+                                <span class="detail-text">${escapeHtml(b.hours)}</span>
+                            </div>
+                        </div>
+                        <div class="card-actions">
+                            <a href="tel:${escapeHtml(b.phone)}" class="action-btn">
+                                ${ICONS.phone}
+                                <span class="action-label">전화</span>
+                            </a>
+                            <a href="${escapeHtml(b.googleMapsUrl)}" target="_blank" rel="noopener" class="action-btn">
+                                ${ICONS.map}
+                                <span class="action-label">지도</span>
+                            </a>
+                            ${email}
+                            ${website}
+                        </div>
+                    </div>
+                `;
+                
+                grid.appendChild(card);
+            });
+            
+            $.resultsContainer.appendChild(grid);
+        }
+        
+        function renderTableView(data) {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'table-container';
+            
+            const table = document.createElement('table');
+            table.className = 'business-table';
+            table.innerHTML = `
+                <thead>
+                    <tr>
+                        <th>이미지</th>
+                        <th>업체명</th>
+                        <th>평점</th>
+                        <th>위치</th>
+                        <th>카테고리</th>
+                        <th>연락처</th>
+                        <th>액션</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            `;
+            
+            const tbody = table.querySelector('tbody');
+            data.forEach(b => {
+                const row = document.createElement('tr');
+                const imgAttr = state.currentPage === 1 
+                    ? `src="${escapeHtml(b.image)}"` 
+                    : `data-src="${escapeHtml(b.image)}" loading="lazy"`;
+                const tags = b.services.map(s => `<span class="tag">${escapeHtml(s)}</span>`).join('');
+                const email = b.email ? `<a href="mailto:${escapeHtml(b.email)}" class="table-action-btn" title="이메일">${ICONS.email}</a>` : '';
+                const website = b.website ? `<a href="https://post.naver.com/${escapeHtml(b.website)}" target="_blank" rel="noopener" class="table-action-btn" title="웹사이트">${ICONS.web}</a>` : '';
+                
+                // Note: Table structure is simplified in CSS for mobile view
+                row.innerHTML = `
+                    <td><img ${imgAttr} alt="${escapeHtml(b.businessName)}" class="table-image"></td>
+                    <td>
+                        <div class="table-name">${escapeHtml(b.businessName)}</div>
+                        <div class="table-rating">
+                            <span style="color: #F59E0B;">★</span>
+                            <strong>${b.rating}</strong>
+                            <span style="color: var(--text-muted);">(${b.reviewCount})</span>
+                        </div>
+                        <div style="font-size: 0.8rem; color: #666; margin-top: 2px;">${escapeHtml(b.city)}</div>
+                    </td>
+                    <td></td>
+                    <td>${escapeHtml(b.city)}, ${escapeHtml(b.country)}</td>
+                    <td><div class="card-tags">${tags}</div></td>
+                    <td>${escapeHtml(b.phone)}</td>
+                    <td>
+                        <div class="table-actions" style="display:flex; gap:0.5rem;">
+                            <a href="tel:${escapeHtml(b.phone)}" class="table-action-btn" title="전화">${ICONS.phone}</a>
+                            <a href="${escapeHtml(b.googleMapsUrl)}" target="_blank" rel="noopener" class="table-action-btn" title="지도">${ICONS.map}</a>
+                            ${email}
+                            ${website}
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+            
+            wrapper.appendChild(table);
+            $.resultsContainer.appendChild(wrapper);
+        }
+        
+        function updateResultCount() {
+            const count = state.filteredData.length;
+            const selectedCount = state.selectedCategories.size - (state.selectedCategories.has('전체') ? 1 : 0);
+            const badge = selectedCount > 0 ? `<span class="filter-count">${selectedCount}</span>` : '';
+            $.resultsText.innerHTML = `검색 결과 <strong>${count}</strong>개 ${badge}`;
+        }
+        
+        function renderPagination() {
+            if (state.filteredData.length === 0) {
+                $.paginationSection.innerHTML = '';
+                return;
+            }
+            
+            const totalPages = Math.ceil(state.filteredData.length / state.itemsPerPage);
+            if (totalPages <= 1) {
+                $.paginationSection.innerHTML = '';
+                return;
+            }
+            
+            const section = document.createElement('div');
+            section.className = 'pagination-section';
+            section.style.display = 'flex';
+            section.style.flexDirection = 'column';
+            section.style.alignItems = 'center';
+            section.style.gap = '1.5rem';
+            
+            section.innerHTML = `
+                <div class="items-selector">
+                    <span>페이지당</span>
+                    <select id="items-select" class="items-select">
+                        <option value="12" ${state.itemsPerPage === 12 ? 'selected' : ''}>12개</option>
+                        <option value="20" ${state.itemsPerPage === 20 ? 'selected' : ''}>20개</option>
+                        <option value="50" ${state.itemsPerPage === 50 ? 'selected' : ''}>50개</option>
+                    </select>
+                </div>
+                <div class="pagination" id="pagination" style="display:flex; gap:0.5rem;"></div>
+            `;
+            
+            const pagination = section.querySelector('#pagination');
+            
+            const prevBtn = createPageBtn('‹', state.currentPage - 1, state.currentPage === 1);
+            pagination.appendChild(prevBtn);
+            
+            getPageNumbers(state.currentPage, totalPages).forEach(page => {
+                if (page === '...') {
+                    const ellipsis = document.createElement('span');
+                    ellipsis.className = 'page-ellipsis';
+                    ellipsis.textContent = '...';
+                    ellipsis.style.padding = '0 0.5rem';
+                    ellipsis.style.color = '#9CA3AF';
+                    pagination.appendChild(ellipsis);
+                } else {
+                    pagination.appendChild(createPageBtn(page, page, false, page === state.currentPage));
+                }
+            });
+            
+            const nextBtn = createPageBtn('›', state.currentPage + 1, state.currentPage === totalPages);
+            pagination.appendChild(nextBtn);
+            
+            $.paginationSection.innerHTML = '';
+            $.paginationSection.appendChild(section);
+            
+            document.getElementById('items-select').addEventListener('change', (e) => {
+                state.itemsPerPage = parseInt(e.target.value);
+                state.currentPage = 1;
+                renderResults();
+                renderPagination();
+            });
+        }
+        
+        function createPageBtn(text, page, disabled = false, current = false) {
+            const btn = document.createElement('button');
+            btn.className = 'page-btn';
+            btn.textContent = text;
+            btn.disabled = disabled;
+            if (current) btn.setAttribute('aria-current', 'page');
+            if (disabled) btn.style.opacity = '0.5';
+            if (!disabled && !current) {
+                btn.addEventListener('click', () => {
+                    state.currentPage = page;
+                    renderResults();
+                    renderPagination();
+                });
+            }
+            return btn;
+        }
+        
+        function getPageNumbers(current, total) {
+            const pages = [];
+            const delta = 2;
+            for (let i = 1; i <= total; i++) {
+                if (i === 1 || i === total || (i >= current - delta && i <= current + delta)) {
+                    pages.push(i);
+                } else if (pages[pages.length - 1] !== '...') {
+                    pages.push('...');
+                }
+            }
+            return pages;
+        }
+        
+        function initLazyLoading() {
+            if ('IntersectionObserver' in window) {
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            loadImage(entry.target);
+                            observer.unobserve(entry.target);
+                        }
+                    });
+                }, { rootMargin: '100px' });
+                
+                new MutationObserver((mutations) => {
+                    mutations.forEach(mutation => {
+                        mutation.addedNodes.forEach(node => {
+                            if (node.nodeType === 1) {
+                                const images = node.querySelectorAll?.('img[data-src]') || 
+                                                (node.tagName === 'IMG' && node.hasAttribute('data-src') ? [node] : []);
+                                images.forEach(img => observer.observe(img));
+                            }
+                        });
+                    });
+                }).observe($.resultsContainer, { childList: true, subtree: true });
+            }
+        }
+        
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', init);
+        } else {
+            init();
+        }
     })();
     </script>
 </body>
