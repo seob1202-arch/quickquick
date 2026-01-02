@@ -179,6 +179,7 @@
             font-size: 0.95rem; font-weight: 700;
             text-decoration: none; transition: transform 0.1s;
             border: 1px solid transparent;
+            cursor: pointer;
         }
         .btn-action:active { transform: scale(0.98); }
         .btn-action.primary { background: var(--primary); color: white; box-shadow: 0 4px 12px rgba(91, 78, 250, 0.25); }
@@ -227,9 +228,18 @@
         /* Fab */
         .fab { position: fixed; bottom: 24px; right: 24px; width: 56px; height: 56px; border-radius: 50%; background: var(--text-title); color: white; border: none; display: flex; align-items: center; justify-content: center; box-shadow: 0 8px 20px rgba(0,0,0,0.2); cursor: pointer; z-index: 100; }
         
-        /* Modal */
-        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 999; display: flex; align-items: flex-end; }
-        .modal-content { width: 100%; background: white; border-radius: 20px 20px 0 0; padding: 1.5rem; max-height: 80vh; overflow-y: auto; }
+        /* Modal General */
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 999; display: flex; }
+        
+        /* Selection Modal (Bottom Sheet) */
+        #subkeyword-modal { align-items: flex-end; }
+        #subkeyword-modal .modal-content { width: 100%; background: white; border-radius: 20px 20px 0 0; padding: 1.5rem; max-height: 80vh; overflow-y: auto; }
+        
+        /* Alert Modal (Center) */
+        #alert-modal { align-items: center; justify-content: center; }
+        #alert-modal .modal-content { width: 85%; max-width: 320px; background: white; border-radius: 20px; padding: 1.5rem; text-align: center; }
+        #alert-msg { margin-bottom: 1.5rem; font-size: 1rem; color: var(--text-title); line-height: 1.4; font-weight: 500; }
+
         .modal-header { display: flex; justify-content: space-between; margin-bottom: 1rem; font-weight: 800; }
         .subkeyword-item { padding: 12px 0; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; font-size: 0.95rem; }
     </style>
@@ -303,6 +313,13 @@
                 <div id="subkeyword-list"></div>
             </div>
         </div>
+
+        <div id="alert-modal" class="modal-overlay hidden">
+            <div class="modal-content">
+                <div id="alert-msg"></div>
+                <button id="alert-ok-btn" class="btn-action primary" style="width:100%; padding:10px 0;">확인</button>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -362,10 +379,16 @@
             resultsText: document.getElementById('results-text'),
             paginationSection: document.getElementById('pagination-section'),
             locationNotice: document.getElementById('location-notice'),
+            // Subkeyword Modal
             subkeywordModal: document.getElementById('subkeyword-modal'),
             subkeywordList: document.getElementById('subkeyword-list'),
             modalCategoryTitle: document.getElementById('modal-category-title'),
             modalCloseBtn: document.getElementById('modal-close-btn'),
+            // Custom Alert Modal
+            alertModal: document.getElementById('alert-modal'),
+            alertMsg: document.getElementById('alert-msg'),
+            alertOkBtn: document.getElementById('alert-ok-btn'),
+            
             shareFab: document.getElementById('share-fab'),
             // Stats
             totalBusinesses: document.getElementById('total-businesses'),
@@ -374,6 +397,16 @@
         };
         
         let searchTimeout = null;
+        
+        // --- CUSTOM ALERT FUNCTION ---
+        function showCustomAlert(msg) {
+            $.alertMsg.textContent = msg;
+            $.alertModal.classList.remove('hidden');
+        }
+
+        function closeCustomAlert() {
+            $.alertModal.classList.add('hidden');
+        }
         
         async function init() {
             try {
@@ -625,7 +658,7 @@
                 const emailBtn = b.email ? `<a href="mailto:${b.email}" class="btn-action secondary">${ICONS.email}<span class="action-text">이메일</span></a>` : '';
                 const webBtn = b.website ? `<a href="https://${b.website}" target="_blank" class="btn-action secondary">${ICONS.web}<span class="action-text">웹사이트</span></a>` : '';
                 
-                // List View Icons (UPDATED: Added Web & Email)
+                // List View Icons (Corrected: Added Web & Email)
                 const listMap = b.googleMapsUrl ? `<a href="${b.googleMapsUrl}" target="_blank" class="icon-btn-circle" title="지도보기">${ICONS.mapSmall}</a>` : '';
                 const listWeb = b.website ? `<a href="https://${b.website}" target="_blank" class="icon-btn-circle" title="웹사이트">${ICONS.web}</a>` : '';
                 const listEmail = b.email ? `<a href="mailto:${b.email}" class="icon-btn-circle" title="이메일">${ICONS.email}</a>` : '';
@@ -713,8 +746,11 @@
 
             $.modalCloseBtn.onclick = () => $.subkeywordModal.classList.add('hidden');
             $.shareFab.onclick = () => {
-                navigator.clipboard.writeText(window.location.href).then(() => alert('주소가 복사되었습니다.'));
+                navigator.clipboard.writeText(window.location.href).then(() => showCustomAlert('주소가 복사되었습니다.'));
             };
+            
+            // Alert Modal Events
+            $.alertOkBtn.onclick = closeCustomAlert;
         }
         
         function getUserLocation() {
@@ -728,7 +764,8 @@
                         b.distance = calculateDistance(state.userLocation.latitude, state.userLocation.longitude, b.latitude, b.longitude);
                     });
                     $.locationNotice.classList.add('hidden');
-                    alert('위치 확인 완료. 거리순 정렬이 가능합니다.');
+                    // REPLACED standard alert with custom modal
+                    showCustomAlert('위치 확인 완료. 거리순 정렬이 가능합니다.');
                     handleFilterChange();
                 });
             };
